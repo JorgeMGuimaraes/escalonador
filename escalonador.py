@@ -1,6 +1,9 @@
 #!/usr/bin/python3
-
+## imports
+from recursos   import Recursos
+from typing     import List
 ## classes
+
 class Processo:
     def __init__(self, id_processo, chegada, prioridade, duracao, memoria, io) -> None:
         self.id_processo    = id_processo
@@ -11,7 +14,7 @@ class Processo:
         self.io             = io
 
 ## definicoes
-def processa_entrada():
+def processa_entrada() -> List[Processo]:
     filename            ='entrada'
     contador_processos  = 0
     processos           = []
@@ -21,13 +24,15 @@ def processa_entrada():
             entrada = Processo(contador_processos, int(valores[0].strip()), int(valores[1].strip()), int(valores[2].strip()), int(valores[3].strip()), int(valores[4].strip()))
             tempo = 'tempo real' if entrada.prioridade == 0 else 'usuário'
             disco = 'sem necessidade de recursos de E/S' if entrada.io == 0 else f'requer { entrada.io} unidade de disco'
-            print(f'Processo {entrada.processo}: chegada no momento {entrada.chegada}, prioridade {entrada.prioridade} ({tempo}), duração de {entrada.duracao} segundos de CPU e memória de {entrada.memoria} MBytes, {disco}')
+            print(f'Processo {entrada.id_processo}: chegada no momento {entrada.chegada}, prioridade {entrada.prioridade} ({tempo}), duração de {entrada.duracao} segundos de CPU e memória de {entrada.memoria} MBytes, {disco}')
             processos.append(entrada)
             contador_processos += 1
     return processos
 
 def main():
     processos = processa_entrada()
+    r = Recursos()
+    print(r.cpus)
 
 ## Programa principal
 if __name__ == "__main__": main()
