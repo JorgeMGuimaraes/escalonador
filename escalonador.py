@@ -1,11 +1,24 @@
 ## imports
 from processo import Processo
+from recursos import Recursos
 from typing import List
 
 
 class Escalonador:
-    def __init__(self, processos: List[Processo]) -> None:
-        self.processos = self.ordena_processos(processos)
+    def __init__(self, recursos:Recursos, processos: List[Processo]) -> None:
+        self.processos: List[Processo]                  = self.ordena_processos(processos)
+        self.processos_nao_iniciados: List[Processo]    = []
+        self.processos_novos: List[Processo]            = []
+        self.processos_prontos: List[Processo]          = []
+        self.processos_executando: List[Processo]       = []
+        self.processos_suspensos: List[Processo]        = []
+        self.processos_bloqueados: List[Processo]       = []
+        self.processos_finalizados: List[Processo]      = []
+
+        for processo in self.processos:
+            self.processos_nao_iniciados.append(processo)
+
+        self.recursos   = recursos
         return
     
     ## carrega
@@ -20,13 +33,74 @@ class Escalonador:
         return False
 
     def politica_fifo(self) -> None:
-
+        # se terminou remover de executando, remover de executando
         return
 
     def politica_feedback(self) -> None:
-
+        # se quantum passou, remover de executando
         return
     
+    def atribuir_politica(self, quantum: int) -> None:
+        self.processa_fila_executando()
+        self.processa_fila_bloqueado()
+        self.processa_fila_suspenso()
+        self.processa_fila_prontos()
+        self.processa_fila_novos()
+        self.processar_fila_nao_iniciados()        
+        return
+    
+    def processar_fila_nao_iniciados(self, quantum: int) -> None:
+        for processo in self.processos_nao_iniciados:
+            if processo.chegada == quantum:
+                self.processos_novos.append(processo)
+                self.processos_nao_iniciados.remove(processo)
+                print(f'Processo {processo.id_processo} entrou na fila de novos')
+        return
+
+    def processa_fila_novos(self) -> None:
+        for processo in self.processos_novos:
+            self.processos_prontos.append(processo)
+            self.processos_novos.remove(processo)
+            print(f'Processo {processo.id_processo} entrou na fila de prontos')
+        return
+
+    def processa_fila_prontos(self) -> None:
+        id_processador = 0
+        for processo in self.processos_prontos:
+            self.processos_executando.append(processo)
+            self.processos_novos.remove(processo)
+            id_processador += 1
+        return
+
+    def processa_fila_executando(self) -> None:
+        tempo_real  = 0
+        usuario     = 1
+        # atribui processador
+        for processador in self.recursos.processadores:
+            if processador.processo_atual is not None:
+                continue
+
+            for processo in self.processos_executando:
+                if processo.estado == 1:
+                    processo.estado = 2
+                    processador.processo_atual = processo
+        # processa
+        for processador in self.recursos.processadores:
+            prioridade  = processador.processo_atual.prioridade
+            if prioridade == usuario:
+                processador.executar(self.politica_feedback)
+                continue
+
+            processador.executar(self.politica_fifo)
+        return
+
+    def processa_fila_suspenso(self) -> None:
+        return
+
+    def processa_fila_bloqueado(self) -> None:
+        return
+
+
     ## exibe
     def imprime_processos_recebidos(self) -> None:
         for processo in self.processos:
