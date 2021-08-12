@@ -29,7 +29,7 @@ def imprime_processos_recebidos(processos:  List[Processo]) -> None:
     print()
     return
 
-def imprime_andamento(quantum: int, recursos: Recursos) -> None:
+def imprime_recursos(quantum: int, recursos: Recursos) -> None:
     espacamento = '    '
     s  = 'Estado Atual:\n'
     s += f'Quantum: {quantum}\n'
@@ -53,7 +53,7 @@ def main():
 
     imprime_processos_recebidos(processos)
     while continuar_processando(processos):
-        imprime_andamento(quantum, recursos)
+        imprime_recursos(quantum, recursos)
         quantum += 1
         _       = input()
     return
