@@ -11,3 +11,8 @@ class Processo:
         self.memoria        = memoria
         self.io             = io
         self.status         = 0
+        self.andamento      = []
+    
+    def atualizar_andamento(self, andamento: bool):
+        self.andamento.append(andamento)
+        return
