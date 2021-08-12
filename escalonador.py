@@ -1,17 +1,9 @@
 #!/usr/bin/python3
 ## imports
+from processo   import Processo
 from recursos   import Recursos
 from typing     import List
 ## classes
-
-class Processo:
-    def __init__(self, id_processo, chegada, prioridade, duracao, memoria, io) -> None:
-        self.id_processo    = id_processo
-        self.chegada        = chegada
-        self.prioridade     = prioridade
-        self.duracao        = duracao
-        self.memoria        = memoria
-        self.io             = io
 
 ## definicoes
 def processa_entrada() -> List[Processo]:
@@ -20,10 +12,10 @@ def processa_entrada() -> List[Processo]:
     processos           = []
     with open(file=filename,mode='r') as arquivo:
         for linha in arquivo:
-            valores = linha.split(', ')
-            entrada = Processo(contador_processos, int(valores[0].strip()), int(valores[1].strip()), int(valores[2].strip()), int(valores[3].strip()), int(valores[4].strip()))
+            valores             = linha.split(', ')
+            entrada             = Processo(contador_processos, int(valores[0].strip()), int(valores[1].strip()), int(valores[2].strip()), int(valores[3].strip()), int(valores[4].strip()))
             processos.append(entrada)
-            contador_processos += 1
+            contador_processos  += 1
     return processos
 
 def ordena_processos(processos:  List[Processo]) -> List[Processo]:
