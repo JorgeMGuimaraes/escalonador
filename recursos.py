@@ -1,39 +1,62 @@
+## imports
+from disco          import Disco
+from processo       import Processo
+from processador    import Processador
+from typing         import List
+
 class Recursos:
     """O sistema possui os seguintes recursos:
         * quatro CPUs
         * quatro discos
         * 16GB de memória principal
     """
-    def __init__(self) -> None:
-        self.cpus       = 4
-        self.discos     = 4
-        self.memoria    = 1024*16
-
-    def usar_cpu(self) -> bool:
-        if self.cpus == 0: return False
-    
-        self.cpus -= 1
-        return True
-
-    def liberar_cpu(self) -> None:
-        self.cpus += 1
+    def __init__(self, cpus, discos, memoria) -> None:
+        self.processadores  = self.carrega_processadores(cpus)
+        self.discos         = self.carrega_discos(discos)
+        self.memoria_total  = memoria
+        self.memoria_uso    = 0
         return
 
-    def usar_disco(self) -> bool:
-        if self.discos == 0: return False
-    
-        self.discos -= 1
-        return True
+    ## carrega
+    def carrega_processadores(self, quantidade: int) -> List[Processador]:
+        processadores = []
+        for i in range(quantidade):
+            processadores.append(Processador(i))
+        return processadores
 
-    def liberar_disco(self) -> None:
-        self.discos += 1
+    def carrega_discos(self, quantidade: int) -> List[Disco]:
+        discos = []
+        for i in range(quantidade):
+            discos.append(Disco(i))
+        return discos
+    ## usa
+    def ha_memoria_disponivel(self, necessario) -> bool:
+        return self.memoria_idle > necessario
+
+    def usa_memoria(self, quantidade: int) -> None:
+        self.memoria_uso    += quantidade
         return
 
-    def usar_memoria(self, valor_consumido) -> bool:
-        if self.memoria - valor_consumido < 0: return False
-    
-        self.memoria -= valor_consumido
-        return True
-    def liberar_memeoria(self, valor_liberado) -> None:
-        self.memeoria += valor_liberado
+    def libera_memoria(self, quantidade: int) -> None:
+        self.memoria_uso    -= quantidade
+        return
+
+    ## exibe
+    def memoria_disponivel(self) -> int:
+        return self.memoria_total - self.memoria_uso
+
+    def imprime_processadores(self) -> None:
+        for processador in self.processadores:
+            atual = 'Idle' if processador.processo_atual is None else f'Processo {processador.processo_atual.id_processo}'
+            print(f'Processador {processador.id_processador}: {atual}')
+        return
+
+    def imprime_memoria(self) -> None:
+        print(f'Memória em uso:     {self.memoria_uso:>8}MB')
+        print(f'Memória disponível: {self.memoria_disponivel():>8}MB')
+        print(f'Memória total:       {self.memoria_total:>8}MB')
+    def imprime_discos(self) -> None:
+        for disco in self.discos:
+            atual = 'Idle' if disco.estado == 0 else 'Lendo ou escrevendo'
+            print(f'Disco {disco.id_disco}: {atual}')
         return
