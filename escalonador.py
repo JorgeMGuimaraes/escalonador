@@ -44,7 +44,7 @@ def imprime_andamento(quanta:int, processos: List[Processo]) -> None:
     espacamento = '    '
     s = 'Andamento:\n'
     s+= '                 |'
-    for quantum in range(quanta):
+    for quantum in range(quanta + 1):
         s += f'{quantum:>2}|'
     print(f'{s}\n')
 
