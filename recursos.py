@@ -1,6 +1,5 @@
 ## imports
 from disco          import Disco
-from processo       import Processo
 from processador    import Processador
 from typing         import List
 
@@ -54,7 +53,9 @@ class Recursos:
     def imprime_memoria(self) -> None:
         print(f'Memória em uso:     {self.memoria_uso:>8}MB')
         print(f'Memória disponível: {self.memoria_disponivel():>8}MB')
-        print(f'Memória total:       {self.memoria_total:>8}MB')
+        print(f'Memória total:      {self.memoria_total:>8}MB')
+        return
+
     def imprime_discos(self) -> None:
         for disco in self.discos:
             atual = 'Idle' if disco.estado == 0 else 'Lendo ou escrevendo'
