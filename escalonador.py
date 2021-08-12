@@ -18,7 +18,7 @@ def processa_entrada() -> List[Processo]:
             contador_processos  += 1
     return processos
 
-def ordena_processos(processos:  List[Processo]) -> List[Processo]:
+def ordena_processos(processos: List[Processo]) -> List[Processo]:
     return sorted(processos, key = lambda proc: (proc.chegada, proc.prioridade))
 
 def imprime_processos_recebidos(processos:  List[Processo]) -> None:
@@ -26,26 +26,36 @@ def imprime_processos_recebidos(processos:  List[Processo]) -> None:
         tempo = 'tempo real' if processo.prioridade == 0 else 'usuário'
         disco = 'sem necessidade de recursos de E/S' if processo.io == 0 else f'requer { processo.io} unidade de disco'
         print(f'Processo {processo.id_processo}: chegada no momento {processo.chegada}, prioridade {processo.prioridade} ({tempo}), duração de {processo.duracao} segundos de CPU e memória de {processo.memoria} MBytes, {disco}')
+    print()
     return
 
 def imprime_andamento(quantum: int, recursos: Recursos) -> None:
     espacamento = '    '
     s  = 'Estado Atual:\n'
+    s += f'Quantum: {quantum}\n'
     s += 'Recursos disponíveis:\n'
     s += f'{espacamento}CPU:     {recursos.cpus}\n'
     s += f'{espacamento}Discos:  {recursos.discos}\n'
     s += f'{espacamento}MP:      {recursos.memoria}MB\n'
-    s += f'{espacamento}Quantum: {quantum}\n'
     print(s)
     return
+
+def continuar_processando(processos: List[Processo]) -> bool:
+    for processo in processos:
+        if processo.status < 100: return True
+
+    return False
 
 def main():
     processos   = ordena_processos(processa_entrada())
     recursos    = Recursos()
     quantum     = 0
 
-    imprime_andamento(quantum, recursos)
     imprime_processos_recebidos(processos)
+    while continuar_processando(processos):
+        imprime_andamento(quantum, recursos)
+        quantum += 1
+        _       = input()
     return
 
 ## Programa principal
