@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 ## imports
-from processo   import Processo
-from recursos   import Recursos
+from processo       import Processo
+from recursos       import Recursos
+
 from typing     import List
 ## classes
 
@@ -33,10 +34,7 @@ def imprime_recursos(quantum: int, recursos: Recursos) -> None:
     espacamento = '    '
     s  = 'Estado Atual:\n'
     s += f'Quantum: {quantum}\n'
-    s += 'Recursos disponíveis:\n'
-    s += f'{espacamento}CPU:     {recursos.cpus}\n'
-    s += f'{espacamento}Discos:  {recursos.discos}\n'
-    s += f'{espacamento}MP:      {recursos.memoria}MB\n'
+    s += 'Recursos:\n'
     print(s)
     return
 
@@ -57,17 +55,23 @@ def imprime_andamento(quanta:int, processos: List[Processo]) -> None:
 
 def continuar_processando(processos: List[Processo]) -> bool:
     for processo in processos:
-        if processo.status < 100: return True
+        if processo.estado < 100: return True
 
     return False
 
 def main():
-    processos   = ordena_processos(processa_entrada())
-    recursos    = Recursos()
-    quanta      = 0
+    cpus            = 4
+    discos          = 4
+    memoria         = 16 * 1024
+    recursos        = Recursos(cpus, discos, memoria)
+    processos       = ordena_processos(processa_entrada())
+    quanta          = 0
     imprime_processos_recebidos(processos)
     while continuar_processando(processos):
         imprime_recursos(quanta, recursos)
+        recursos.imprime_processadores()
+        recursos.imprime_memoria()
+        recursos.imprime_discos()
         imprime_andamento(quanta, processos)
         quanta += 1
         _       = input()
