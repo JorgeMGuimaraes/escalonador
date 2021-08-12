@@ -40,6 +40,21 @@ def imprime_recursos(quantum: int, recursos: Recursos) -> None:
     print(s)
     return
 
+def imprime_andamento(quanta:int, processos: List[Processo]) -> None:
+    espacamento = '    '
+    s = 'Andamento:\n'
+    s+= '                 |'
+    for quantum in range(quanta):
+        s += f'{quantum:>2}|'
+    print(f'{s}\n')
+
+    for processo in processos:
+        s = f'{espacamento}Processo {processo.id_processo:>2}: |'
+        for processou in processo.andamento:
+            s += '* |' if processou else '  |'
+        print(f'{s}\n')
+    return
+
 def continuar_processando(processos: List[Processo]) -> bool:
     for processo in processos:
         if processo.status < 100: return True
@@ -49,32 +64,14 @@ def continuar_processando(processos: List[Processo]) -> bool:
 def main():
     processos   = ordena_processos(processa_entrada())
     recursos    = Recursos()
-    quantum     = 0
-
+    quanta      = 0
     imprime_processos_recebidos(processos)
     while continuar_processando(processos):
-        imprime_recursos(quantum, recursos)
-        quantum += 1
+        imprime_recursos(quanta, recursos)
+        imprime_andamento(quanta, processos)
+        quanta += 1
         _       = input()
     return
 
 ## Programa principal
 if __name__ == "__main__": main()
-
-"""
-Estado Atual:
-Recursos disponíveis:
-    CPU:    4
-    Discos: 4
-    MP:     15246 MB
-    Quantum: 12
-Processos:
-    Novo:        Processo 0
-    Novo:        Processo 1
-    Processando: Processo 1
-Andamento:
-                |12|13|14|15|
-    Processo 0: |* | 
-    Processo 1: |  |
-
-"""
