@@ -1,2 +1,2 @@
 # escalonador
-Escalonador pra a disciplina de Sistemas Operacionais
+Escalonador de  processos desenvolvido para a disciplina de Sistemas Operacionais
