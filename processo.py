@@ -43,6 +43,10 @@ class Processo:
             return
         return
 
+    def aguardando(self) -> None:
+        self.andamento.append(False)
+        return
+
     def atualiza_estado(self, novo_estado: int) -> None:
         if self.estado == novo_estado: return
 

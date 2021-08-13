@@ -54,6 +54,7 @@ class Escalonador:
                 self.processos_novos.append(processo)
                 self.processos_nao_iniciados.remove(processo)
                 self.logs.append(f'Processo {processo.id_processo}: é um novo processo')
+        self.atualiza_andamento_idle(self.processos_nao_iniciados)
         return
 
     def processa_fila_novos(self, quantum: int) -> None:
@@ -80,12 +81,11 @@ class Escalonador:
                     self.processos_prontos.remove(processo)
                     self.logs.append(f'Processo {processo.id_processo}: será executado.')
                     break
+        self.atualiza_andamento_idle(self.processos_prontos)
         return
 
     def processa_fila_executando(self) -> None:
-        tempo_real  = 0
-        usuario     = 1
-
+        self.atualiza_andamento_idle(self.processos_finalizados)
         # processa
         for processador in self.recursos.processadores:
             if processador.processo_atual is not None:
@@ -108,6 +108,7 @@ class Escalonador:
                 self.logs.append(f'Processo {processo.id_processo} precisa executar uma função IO e foi bloqueado.')
             #vai para terminado
             elif processo.estado == estado['finalizado']:
+                self.processos_finalizados.append(processo)
                 self.processos_executando.remove(processo)
                 self.logs.append(f'Processo {processo.id_processo} terminou sua execução.')
                 for processador in self.recursos.processadores:
@@ -117,12 +118,21 @@ class Escalonador:
         return
 
     def processa_fila_suspenso(self) -> None:
+        self.atualiza_andamento_idle(self.processos_prontos_suspenso)
         return
 
     def processa_fila_bloqueado(self) -> None:
+        self.atualiza_andamento_idle(self.processos_bloqueados)
         return
 
+    def processa_fila_finalizado(self) -> None:
+        self.atualiza_andamento_idle(self.processos_finalizados)
+        return
 
+    def atualiza_andamento_idle(self, processos: List[Processo]) -> None:
+        for processo in processos:
+            processo.aguardando()
+        return
     ## exibe
     def imprime_processos_recebidos(self) -> None:
         for processo in self.processos:
