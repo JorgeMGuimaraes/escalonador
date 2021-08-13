@@ -52,9 +52,9 @@ class Escalonador:
         #self.processa_fila_executando()
         #self.processa_fila_bloqueado()
         # self.processa_fila_suspenso()
-        # self.processa_fila_prontos()
         self.processar_fila_nao_iniciados(quantum)        
         self.processa_fila_novos()
+        self.processa_fila_prontos()
         return
     
     def processar_fila_nao_iniciados(self, quantum: int) -> None:
@@ -78,12 +78,15 @@ class Escalonador:
         return
 
     def processa_fila_prontos(self) -> None:
-        id_processador = 0
         for processo in self.processos_prontos:
-            self.processos_executando.append(processo)
-            self.processos_novos.remove(processo)
-            id_processador += 1
-            print(f'Processo {processo.id_processo} será executado.')
+            for processador in self.recursos.processadores:
+                if processador.processo_atual is None:
+                    processador.processo_atual  = processo
+                    processo.estado             = 2
+                    self.processos_executando.append(processo)
+                    self.processos_prontos.remove(processo)
+                    self.logs.append(f'Processo {processo.id_processo} será executado.')
+                    break
         return
 
     def processa_fila_executando(self) -> None:
