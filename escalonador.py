@@ -25,6 +25,16 @@ class Escalonador:
             self.processos_nao_iniciados.append(processo)
 
         self.recursos   = recursos
+
+        self.mensagens = {
+            'novo': 'Novo processo instanciado em memória',
+            'novo_pronto': 'Entrou na fila de prontos.',
+            'pronto_suspenso': 'Entrou na fila de prontos-suspensos.',
+            'perdeu_processador': 'Perdeu processador e foi encaminhado a lista de prontos.',
+            'sera_executado': 'Será executado.',
+            'foi_bloqueado': 'Precisa executar uma função IO e foi bloqueado.',
+            'terminou': 'Terminou sua execução.'
+        }
         return
     
     ## carrega
@@ -39,8 +49,8 @@ class Escalonador:
         return False
    
     def atribuir_politica(self, contador_quanta: int, quantum: int) -> None:
-        #self.processa_fila_bloqueado()
-        # self.processa_fila_suspenso()
+        self.processa_fila_bloqueado()
+        self.processa_fila_suspenso()
         self.processa_fila_nao_iniciados(contador_quanta)        
         self.processa_fila_novos(quantum)
         self.processa_fila_prontos()
@@ -51,9 +61,7 @@ class Escalonador:
     def processa_fila_nao_iniciados(self, contador_quanta: int) -> None:
         for processo in self.processos_nao_iniciados:
             if processo.chegada == contador_quanta:
-                self.processos_novos.append(processo)
-                self.processos_nao_iniciados.remove(processo)
-                self.logs.append(f'Processo {processo.id_processo}: é um novo processo')
+                self.atualiza_estado(processo, self.processos_nao_iniciados, self.processos_novos, 'novo')
         self.atualiza_andamento_idle(self.processos_nao_iniciados)
         return
 
@@ -63,24 +71,18 @@ class Escalonador:
                 processo.define_quantum(quantum)
                 self.recursos.usa_memoria(processo.memoria)
                 # TODO: usa disco
-                self.processos_prontos.append(processo)
-                self.logs.append(f'Processo {processo.id_processo}: entrou na fila de prontos')
+                self.atualiza_estado(processo, self.processos_novos, self.processos_prontos, 'novo_pronto')
             else:
-                self.processos_prontos_suspenso.append(processo)
-                self.logs.append(f'Processo {processo.id_processo}: entrou na fila de prontos-suspensos')
-            self.processos_novos.remove(processo)
+                self.atualiza_estado(processo, self.processos_novos, self.processos_prontos_suspenso, 'pronto_suspenso')
         return
 
     def processa_fila_prontos(self) -> None:
         for processo in self.processos_prontos:
             for processador in self.recursos.processadores:
-                if processador.processo_atual is None:
-                    processador.processo_atual  = processo
-                    processo.estado             = 2
-                    self.processos_executando.append(processo)
-                    self.processos_prontos.remove(processo)
-                    self.logs.append(f'Processo {processo.id_processo}: será executado.')
+                if processador.agregar(processo):
+                    self.atualiza_estado(processo, self.processos_prontos, self.processos_executando, 'sera_executado')
                     break
+
         self.atualiza_andamento_idle(self.processos_prontos)
         return
 
@@ -88,9 +90,10 @@ class Escalonador:
         self.atualiza_andamento_idle(self.processos_finalizados)
         # processa
         for processador in self.recursos.processadores:
+            # TODO: passar essa lógica para dentro do processador 
             if processador.processo_atual is not None:
                 processador.executar()
-                self.logs.append(f'Processo {processador.id_processador}: executando o Core {processador.processo_atual.id_processo}')
+                self.logs.append(f'Processo {processador.processo_atual.id_processo}: Executou no Core {processador.id_processador}')
 
         for processo in self.processos_executando:
             #continua executando
@@ -98,22 +101,19 @@ class Escalonador:
                 continue
             #vai para pronto
             elif processo.estado == estado['pronto']:
-                self.processos_prontos.append(processo)
-                self.processos_executando.remove(processo)
-                self.logs.append(f'Processo {processo.id_processo} perdeu processador e foi encaminhado a lista de prontos.')
+                self.atualiza_estado(processo, self.processos_executando, self.processos_prontos, 'perdeu_processador')
+                for processador in self.recursos.processadores:
+                    processador.liberar(processo)
             #vai para bloqueado
             elif processo.estado == estado['bloqueado']:
-                self.processos_bloqueados.append(processo)
-                self.processos_executando.remove(processo)
-                self.logs.append(f'Processo {processo.id_processo} precisa executar uma função IO e foi bloqueado.')
+                self.atualiza_estado(processo, self.processos_executando, self.processos_bloqueados, 'foi_bloqueado', novo_estado='bloqueado')
+                for processador in self.recursos.processadores:
+                    processador.liberar(processo)
             #vai para terminado
             elif processo.estado == estado['finalizado']:
-                self.processos_finalizados.append(processo)
-                self.processos_executando.remove(processo)
-                self.logs.append(f'Processo {processo.id_processo} terminou sua execução.')
+                self.atualiza_estado(processo, self.processos_executando, self.processos_finalizados, 'terminou')
                 for processador in self.recursos.processadores:
-                    if processador.processo_atual == processo:
-                        processador.processo_atual = None
+                    processador.liberar(processo)
                     self.recursos.libera_memoria(processo.memoria)
         return
 
@@ -122,6 +122,7 @@ class Escalonador:
         return
 
     def processa_fila_bloqueado(self) -> None:
+        # processa blocks
         self.atualiza_andamento_idle(self.processos_bloqueados)
         return
 
@@ -133,6 +134,14 @@ class Escalonador:
         for processo in processos:
             processo.aguardando()
         return
+    
+    def atualiza_estado(self, processo: Processo, lista_atual: List[Processo], lista_nova: List[Processo], msg: str, novo_estado: str=None):
+        lista_nova.append(processo)
+        lista_atual.remove(processo)
+        if novo_estado:
+            processo.estado = estado[novo_estado]
+        self.logs.append(f'Processo {processo.id_processo}: {self.mensagens[msg]}')
+        pass
     ## exibe
     def imprime_processos_recebidos(self) -> None:
         for processo in self.processos:
