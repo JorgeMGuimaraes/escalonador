@@ -8,14 +8,14 @@ estado = {
     'finalizado': 101
 }
 class Processo:
-    def __init__(self, id_processo, chegada, prioridade, duracao, memoria, io) -> None:
+    def __init__(self, id_processo, chegada, prioridade, duracao, memoria, discos) -> None:
         self.id_processo    = id_processo
         self.chegada        = chegada
         self.prioridade     = prioridade
         self.duracao        = duracao
         self.memoria        = memoria
-        self.io             = io
-        self.estado         = 0
+        self.discos         = discos
+        self.estado         = estado['nao_instanciado']
         #self.quanta         = quanta
         self.andamento      = []
     
@@ -57,7 +57,7 @@ class Processo:
         return self.duracao == 0
 
     def necessita_disco(self) -> bool:
-        return self.io > 0
+        return self.discos > 0
     
     def is_tempo_real(self) -> bool:
         return self.prioridade == 0

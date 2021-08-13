@@ -21,15 +21,14 @@ def processa_entrada(quantum: int) -> List[Processo]:
             prioridade  = int(valores[1].strip())
             duracao     = int(valores[2].strip())
             memoria     = int(valores[3].strip())
-            io          = int(valores[4].strip())
+            discos      = int(valores[4].strip())
             entrada     = Processo(
                                     id_processo = contador_processos,
                                     chegada     = chegada,
                                     prioridade  = prioridade,
                                     duracao     = duracao,
                                     memoria     = memoria,
-                                    io          = io
-                                    )
+                                    discos      = discos                                 )
             entrada.define_quantum(quantum)
             processos.append(entrada)
             contador_processos  += 1

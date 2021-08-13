@@ -1,5 +1,6 @@
 ## imports
-from disco          import Disco
+from processo import Processo
+from disco          import Disco, estado_disco
 from processador    import Processador
 from typing         import List
 
@@ -29,8 +30,12 @@ class Recursos:
             discos.append(Disco(i))
         return discos
     ## usa
-    def ha_memoria_disponivel(self, necessario) -> bool:
-        return self.memoria_total - self.memoria_uso > necessario
+    def ha_recursos_disponiveis(self, processo: Processo) -> bool:
+        discos_disponiveis = 0
+        for disco in self.discos:
+            if disco.disponivel():
+                discos_disponiveis += 1
+        return (self.memoria_total - self.memoria_uso > processo.memoria) and (discos_disponiveis > processo.discos)
 
     def usa_memoria(self, quantidade: int) -> None:
         self.memoria_uso    += quantidade
@@ -58,6 +63,6 @@ class Recursos:
 
     def imprime_discos(self) -> None:
         for disco in self.discos:
-            atual = 'Idle' if disco.estado == 0 else 'Lendo ou escrevendo'
+            atual = 'Idle' if disco.estado == estado_disco['idle'] else 'Leitura/Escrita'
             print(f'Disco {disco.id_disco}: {atual}')
         return

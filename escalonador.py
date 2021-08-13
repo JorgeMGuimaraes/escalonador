@@ -67,7 +67,8 @@ class Escalonador:
 
     def processa_fila_novos(self, quantum: int) -> None:
         for processo in self.processos_novos:
-            if self.recursos.ha_memoria_disponivel(processo.memoria):
+            # TODO: refatorar?
+            if self.recursos.ha_recursos_disponiveis(processo):
                 processo.define_quantum(quantum)
                 self.recursos.usa_memoria(processo.memoria)
                 # TODO: usa disco
@@ -90,7 +91,6 @@ class Escalonador:
         self.atualiza_andamento_idle(self.processos_finalizados)
         # processa
         for processador in self.recursos.processadores:
-            # TODO: passar essa lógica para dentro do processador 
             if processador.pode_executar():
                 self.logs.append(f'Processo {processador.processo_atual.id_processo}: Executou no Core {processador.id_processador}')
 
@@ -145,8 +145,8 @@ class Escalonador:
     def imprime_processos_recebidos(self) -> None:
         for processo in self.processos:
             tempo = 'tempo real' if processo.prioridade == 0 else 'usuário'
-            disco = 'sem necessidade de recursos de E/S' if processo.io == 0 else f'requer { processo.io} unidade de disco'
-            print(f'Processo {processo.id_processo}: chegada no momento {processo.chegada}, prioridade {processo.prioridade} ({tempo}), duração de {processo.duracao} segundos de CPU e memória de {processo.memoria} MBytes, {disco}')
+            discos = 'sem necessidade de recursos de E/S' if processo.discos == 0 else f'requer { processo.discos} unidade(s) de disco(s)'
+            print(f'Processo {processo.id_processo}: chegada no momento {processo.chegada}, prioridade {processo.prioridade} ({tempo}), duração de {processo.duracao} segundos de CPU e memória de {processo.memoria} MBytes, {discos} disco(s)')
         return
 
     def imprime_andamento(self, quanta:int) -> None:
