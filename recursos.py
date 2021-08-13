@@ -1,4 +1,5 @@
 ## imports
+# TODO: procurar por _typeshed em todos os arquivos
 from processo import Processo
 from disco          import Disco, estado_disco
 from processador    import Processador

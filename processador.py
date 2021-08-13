@@ -1,15 +1,17 @@
 ## imports
 from processo import Processo, estado
 
-## classes
+## classe
 class Processador:
     def __init__(self, id_processador) -> None:
         self.processo_atual = None
         self.id_processador = id_processador
         return
 
+    # TODO: estamos usando?
     def define_processo_atual(self, processo: Processo) -> None:
         self.processo_atual = processo
+        # TODO: ver se podemos remover esse print
         print(f'Processo {processo.id_processo} foi atribuido ao Processador {self.id_processador}')
         return
 

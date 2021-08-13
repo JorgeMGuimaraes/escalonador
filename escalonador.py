@@ -67,12 +67,14 @@ class Escalonador:
 
     def processa_fila_novos(self, quantum: int) -> None:
         for processo in self.processos_novos:
-            # TODO: refatorar?
             if self.recursos.ha_recursos_disponiveis(processo):
                 processo.define_quantum(quantum)
                 self.recursos.usa_memoria(processo.memoria)
-                # TODO: usa disco
+                for disco in self.recursos.discos:
+                    if disco.pode_agregar(processo):
+                        self.logs.append(f'Processo {processo.id_processo}: Reservou o disco {disco.id_disco}')
                 self.atualiza_estado(processo, self.processos_novos, self.processos_prontos, 'novo_pronto')
+
             else:
                 self.atualiza_estado(processo, self.processos_novos, self.processos_prontos_suspenso, 'pronto_suspenso')
         return
@@ -140,6 +142,7 @@ class Escalonador:
         if novo_estado:
             processo.estado = estado[novo_estado]
         self.logs.append(f'Processo {processo.id_processo}: {self.mensagens[msg]}')
+        # TODO: pass?
         pass
     ## exibe
     def imprime_processos_recebidos(self) -> None:
