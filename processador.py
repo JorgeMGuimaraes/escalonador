@@ -1,5 +1,5 @@
 ## imports
-from processo import Processo
+from processo import Processo, estado
 
 ## classes
 class Processador:
@@ -16,4 +16,16 @@ class Processador:
     def executar(self) -> None:
         self.processo_atual.executando()
         print(f'Processo {self.processo_atual.id_processo} executando no processador {self.id_processador} com a política !!! definir !!!')
+        return
+    
+    def agregar(self, processo: Processo) -> bool:
+        if self.processo_atual is None:
+            processo.atualiza_estado(estado['executando'])
+            self.processo_atual = processo
+            return True
+        return False
+
+    def liberar(self, processo: Processo):
+        if self.processo_atual == processo:
+            self.processo_atual = None
         return
