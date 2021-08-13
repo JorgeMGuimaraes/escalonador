@@ -18,10 +18,14 @@ class Processo:
         self.estado         = 0
         self.andamento      = []
     
-    def atualizar_andamento(self, andamento: bool) -> None:
-        self.andamento.append(andamento)
+    def executando(self, is_executando: bool) -> None:
+        self.andamento.append(is_executando)
+        if is_executando:
+            self.duracao -= 1
+            if self.duracao == 0:
+                self.atualiza_estado(101)
         return
-
+        
     def atualiza_estado(self, novo_estado: int) -> None:
         if self.estado == novo_estado: return
 
