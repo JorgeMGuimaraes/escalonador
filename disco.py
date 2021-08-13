@@ -23,8 +23,9 @@ class Disco:
     def disponivel(self) -> bool:
         return self.processo_atual == None
 
-    def gravar(self) -> bool:
-        if not self.disponivel():
+    def gravar(self, processo: Processo) -> bool:
+        if self.processo_atual == processo:
+            self.processo_atual = None
             return True
         return False
 
@@ -41,7 +42,11 @@ class Disco:
             return True
         return False
 
-    def liberar(self, processo: Processo):
-        if self.processo_atual == processo:
-            self.processo_atual = None
+    # def liberar(self, processo: Processo):
+    #     if self.processo_atual == processo:
+    #         self.processo_atual = None
+    #     return
+
+    def liberar(self):
+        self.processo_atual = None
         return

@@ -9,26 +9,26 @@ from typing import List
 
 class Escalonador:
     def __init__(self, recursos:Recursos, processos: List[Processo]) -> None:
-        self.processos: List[Processo]                  = self.ordena_processos(processos)
-        self.processos_nao_iniciados: List[Processo]    = []
-        self.processos_novos: List[Processo]            = []
-        self.processos_prontos: List[Processo]          = []
-        self.processos_prontos_suspenso: List[Processo] = []
-        self.processos_executando: List[Processo]       = []
+        self.processos: List[Processo]                      = self.ordena_processos(processos)
+        self.processos_nao_iniciados: List[Processo]        = []
+        self.processos_novos: List[Processo]                = []
+        self.processos_prontos: List[Processo]              = []
+        self.processos_prontos_suspenso: List[Processo]     = []
+        self.processos_executando: List[Processo]           = []
         # TODO: ver so pode renomear para prontosuspenso
-        self.processos_suspensos: List[Processo]        = []
-        self.processos_bloqueados: List[Processo]       = []
-        self.processos_bloqueados_suspensos: List[Processo]  = []
-        self.processos_finalizados: List[Processo]      = []
+        self.processos_suspensos: List[Processo]            = []
+        self.processos_bloqueados: List[Processo]           = []
+        self.processos_bloqueados_suspensos: List[Processo] = []
+        self.processos_finalizados: List[Processo]          = []
 
-        self.logs: List[str]                            = []
+        self.logs: List[str]                                = []
 
         for processo in self.processos:
             self.processos_nao_iniciados.append(processo)
 
-        self.recursos   = recursos
+        self.recursos                                       = recursos
 
-        self.mensagens = {
+        self.mensagens                                      = {
             'novo': 'Novo processo instanciado em memória',
             'novo_pronto': 'Entrou na fila de prontos.',
             'pronto_suspenso': 'Entrou na fila de prontos-suspensos.',
@@ -53,8 +53,9 @@ class Escalonador:
         return False
    
     def atribuir_politica(self, contador_quanta: int, quantum: int) -> None:
+        self.processa_bloqueado_suspenso()
+        self.processa_fila_prontos_suspensos()
         self.processa_fila_bloqueado()
-        self.processa_fila_suspenso()
         self.processa_fila_nao_iniciados(contador_quanta)        
         self.processa_fila_novos(quantum)
         self.processa_fila_prontos()
@@ -119,7 +120,9 @@ class Escalonador:
                     self.recursos.libera_memoria(processo.memoria)
         return
 
-    def processa_fila_suspenso(self) -> None:
+    def processa_fila_prontos_suspensos(self) -> None:
+        for processo in self.processos_prontos_suspenso:
+            self.atualiza_estado(processo, self.processos_prontos_suspenso, self.processos_prontos, 'novo_pronto', novo_estado='pronto')
         self.atualiza_andamento_idle(self.processos_prontos_suspenso)
         return
 
@@ -136,9 +139,16 @@ class Escalonador:
 
     def processa_bloqueado_suspenso(self) -> None:
         self.atualiza_andamento_idle(self.processos_bloqueados_suspensos)
-        for disco in self.recursos.discos:
-            if disco.gravar():
-                self.logs.append(f'Processo {disco.processo_atual.id_processo}: Está lendo/gravando no disco {disco.id_disco}')
+        for processo in self.processos_bloqueados_suspensos:
+            for disco in self.recursos.discos:
+                if disco.gravar(processo):
+                    self.logs.append(f'Processo {processo.id_processo}: Está lendo/gravando no disco {disco.id_disco}')
+                    if processo.terminou_de_processar():
+                        self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_finalizados, 'terminou', novo_estado='finalizado')
+                        disco.liberar()
+                    else:
+                        self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_suspenso', novo_estado='pronto_suspenso')
+                        disco.liberar()
 
         for processo in self.processos_bloqueados_suspensos:
             self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_bloqueado', 'pronto_suspenso')
