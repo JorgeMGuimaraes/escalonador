@@ -43,7 +43,8 @@ def imprime_header(quantum: int) -> None:
     return
 
 def main():
-    quantum         = 0
+    # TODO: pegar valores do usuário
+    quantum         = 2
     contador_quanta = 0
     cpus            = 4
     discos          = 4
