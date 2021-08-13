@@ -4,6 +4,8 @@ from processo import Processo, estado
 from recursos import Recursos
 from typing import List
 
+# TODO: fix: memoria alocada
+# TODO: fix: devolver memoria
 
 class Escalonador:
     def __init__(self, recursos:Recursos, processos: List[Processo]) -> None:
@@ -36,28 +38,30 @@ class Escalonador:
 
         return False
    
-    def atribuir_politica(self, quantum: int) -> None:
+    def atribuir_politica(self, contador_quanta: int, quantum: int) -> None:
         #self.processa_fila_bloqueado()
         # self.processa_fila_suspenso()
-        self.processar_fila_nao_iniciados(quantum)        
-        self.processa_fila_novos()
+        self.processa_fila_nao_iniciados(contador_quanta)        
+        self.processa_fila_novos(quantum)
         self.processa_fila_prontos()
         self.processa_fila_executando()
         return
     
     # TODO: Sempre atualizar os estados dos processos
-    def processar_fila_nao_iniciados(self, quantum: int) -> None:
+    def processa_fila_nao_iniciados(self, contador_quanta: int) -> None:
         for processo in self.processos_nao_iniciados:
-            if processo.chegada == quantum:
+            if processo.chegada == contador_quanta:
                 self.processos_novos.append(processo)
                 self.processos_nao_iniciados.remove(processo)
                 self.logs.append(f'Processo {processo.id_processo}: é um novo processo')
         return
 
-    def processa_fila_novos(self) -> None:
+    def processa_fila_novos(self, quantum: int) -> None:
         for processo in self.processos_novos:
             if self.recursos.ha_memoria_disponivel(processo.memoria):
+                processo.define_quantum(quantum)
                 self.recursos.usa_memoria(processo.memoria)
+                # TODO: usa disco
                 self.processos_prontos.append(processo)
                 self.logs.append(f'Processo {processo.id_processo}: entrou na fila de prontos')
             else:
@@ -107,8 +111,9 @@ class Escalonador:
                 self.processos_executando.remove(processo)
                 self.logs.append(f'Processo {processo.id_processo} terminou sua execução.')
                 for processador in self.recursos.processadores:
-                    if processador.processo_atual is None:
-                        processador.processo_atual = processo
+                    if processador.processo_atual == processo:
+                        processador.processo_atual = None
+                    self.recursos.libera_memoria(processo.memoria)
         return
 
     def processa_fila_suspenso(self) -> None:

@@ -16,18 +16,47 @@ class Processo:
         self.memoria        = memoria
         self.io             = io
         self.estado         = 0
+        #self.quanta         = quanta
         self.andamento      = []
     
-    def executando(self, is_executando: bool) -> None:
-        self.andamento.append(is_executando)
-        if is_executando:
-            self.duracao -= 1
-            if self.duracao == 0:
-                self.atualiza_estado(101)
+    def define_quantum(self, valor: int) -> None:
+        self.quanta = valor
         return
+
+    def executando(self) -> None:
+        self.andamento.append(True)
+        self.quanta     -= 1
+        self.duracao    -= 1
+        if self.terminou_de_processar():
+            self.atualiza_estado(estado['finalizado'])
+            return
         
+        if self.is_tempo_real():
+            return
+        
+        if self.usuario_sem_quantum():
+            self.atualiza_estado(estado['pronto'])
+            return
+
+        if self.necessita_disco():
+            self.atualiza_estado(estado['bloqueado'])
+            return
+        return
+
     def atualiza_estado(self, novo_estado: int) -> None:
         if self.estado == novo_estado: return
 
         self.estado = novo_estado
         return
+
+    def terminou_de_processar(self) -> bool:
+        return self.duracao == 0
+
+    def necessita_disco(self) -> bool:
+        return self.io > 0
+    
+    def is_tempo_real(self) -> bool:
+        return self.prioridade == 0
+    
+    def usuario_sem_quantum(self) -> bool:
+        return self.quanta == 0
