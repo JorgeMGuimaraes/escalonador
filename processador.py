@@ -13,12 +13,14 @@ class Processador:
         print(f'Processo {processo.id_processo} foi atribuido ao Processador {self.id_processador}')
         return
 
-    def executar(self) -> None:
-        self.processo_atual.executando()
-        print(f'Processo {self.processo_atual.id_processo} executando no processador {self.id_processador} com a política !!! definir !!!')
-        return
+    def pode_executar(self) -> bool:
+        if self.processo_atual is not None:
+            self.processo_atual.executando()
+            #print(f'Processo {self.processo_atual.id_processo} executando no processador {self.id_processador} com a política !!! definir !!!')
+            return True
+        return False
     
-    def agregar(self, processo: Processo) -> bool:
+    def pode_agregar(self, processo: Processo) -> bool:
         if self.processo_atual is None:
             processo.atualiza_estado(estado['executando'])
             self.processo_atual = processo

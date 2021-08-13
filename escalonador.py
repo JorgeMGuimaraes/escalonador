@@ -79,7 +79,7 @@ class Escalonador:
     def processa_fila_prontos(self) -> None:
         for processo in self.processos_prontos:
             for processador in self.recursos.processadores:
-                if processador.agregar(processo):
+                if processador.pode_agregar(processo):
                     self.atualiza_estado(processo, self.processos_prontos, self.processos_executando, 'sera_executado')
                     break
 
@@ -91,8 +91,7 @@ class Escalonador:
         # processa
         for processador in self.recursos.processadores:
             # TODO: passar essa lógica para dentro do processador 
-            if processador.processo_atual is not None:
-                processador.executar()
+            if processador.pode_executar():
                 self.logs.append(f'Processo {processador.processo_atual.id_processo}: Executou no Core {processador.id_processador}')
 
         for processo in self.processos_executando:
