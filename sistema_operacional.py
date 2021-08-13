@@ -14,6 +14,8 @@ def processa_entrada(quantum: int) -> List[Processo]:
     processos           = []
     with open(file=filename,mode='r') as arquivo:
         for linha in arquivo:
+            if linha.startswith('#'):
+                continue
             valores     = linha.split(', ')
             chegada     = int(valores[0].strip())
             prioridade  = int(valores[1].strip())
