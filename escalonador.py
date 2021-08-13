@@ -1,4 +1,5 @@
 ## imports
+from processador import Processador
 from processo import Processo
 from recursos import Recursos
 from typing import List
@@ -10,10 +11,13 @@ class Escalonador:
         self.processos_nao_iniciados: List[Processo]    = []
         self.processos_novos: List[Processo]            = []
         self.processos_prontos: List[Processo]          = []
+        self.processos_prontos_suspenso: List[Processo] = []
         self.processos_executando: List[Processo]       = []
         self.processos_suspensos: List[Processo]        = []
         self.processos_bloqueados: List[Processo]       = []
         self.processos_finalizados: List[Processo]      = []
+
+        self.logs: List[str]                            = []
 
         for processo in self.processos:
             self.processos_nao_iniciados.append(processo)
@@ -32,8 +36,12 @@ class Escalonador:
 
         return False
 
-    def politica_fifo(self) -> None:
+    def politica_fifo(self, processador: Processador) -> None:
         # se terminou remover de executando, remover de executando
+        processador.processo_atual.executando(True)
+
+        processador.processo_atual.estado = 2
+        processador.processo_atual.duracao -= 1
         return
 
     def politica_feedback(self) -> None:
@@ -41,12 +49,12 @@ class Escalonador:
         return
     
     def atribuir_politica(self, quantum: int) -> None:
-        self.processa_fila_executando()
-        self.processa_fila_bloqueado()
-        self.processa_fila_suspenso()
-        self.processa_fila_prontos()
+        #self.processa_fila_executando()
+        #self.processa_fila_bloqueado()
+        # self.processa_fila_suspenso()
+        # self.processa_fila_prontos()
+        self.processar_fila_nao_iniciados(quantum)        
         self.processa_fila_novos()
-        self.processar_fila_nao_iniciados()        
         return
     
     def processar_fila_nao_iniciados(self, quantum: int) -> None:
@@ -54,14 +62,19 @@ class Escalonador:
             if processo.chegada == quantum:
                 self.processos_novos.append(processo)
                 self.processos_nao_iniciados.remove(processo)
-                print(f'Processo {processo.id_processo} entrou na fila de novos')
+                self.logs.append(f'Processo {processo.id_processo} é um novo processo')
         return
 
     def processa_fila_novos(self) -> None:
         for processo in self.processos_novos:
-            self.processos_prontos.append(processo)
+            if self.recursos.ha_memoria_disponivel(processo.memoria):
+                self.recursos.usa_memoria(processo.memoria)
+                self.processos_prontos.append(processo)
+                self.logs.append(f'Processo {processo.id_processo} entrou na fila de prontos')
+            else:
+                self.processos_prontos_suspenso.append(processo)
+                self.logs.append(f'Processo {processo.id_processo} entrou na fila de prontos-suspensos')
             self.processos_novos.remove(processo)
-            print(f'Processo {processo.id_processo} entrou na fila de prontos')
         return
 
     def processa_fila_prontos(self) -> None:
@@ -70,16 +83,32 @@ class Escalonador:
             self.processos_executando.append(processo)
             self.processos_novos.remove(processo)
             id_processador += 1
+            print(f'Processo {processo.id_processo} será executado.')
         return
 
     def processa_fila_executando(self) -> None:
         tempo_real  = 0
         usuario     = 1
+
+        for processo in self.processos_executando:
+            if processo.estado == 1: # pronto
+                for processador in self.recursos.processadores:
+                    if processador.processo_atual is None:
+                        processador.processo_atual = processo
+                pass
+            elif processo.estado == 2: # executando
+                #checa se ainda pode executar
+                    #se nao pode: atualiza estado, mode de fila
+                pass
+
+
+
         # atribui processador
         for processador in self.recursos.processadores:
-            if processador.processo_atual is not None:
-                continue
-
+            if processador.processo_atual is None:
+                pass
+            else:
+                pass
             for processo in self.processos_executando:
                 if processo.estado == 1:
                     processo.estado = 2
@@ -122,4 +151,12 @@ class Escalonador:
             for processou in processo.andamento:
                 s += '* |' if processou else '  |'
             print(f'{s}\n')
+        return
+    
+    def imprime_log_processos(self) -> None:
+        print(f'\nLog de Processos:')
+        for log in self.logs:
+            print(log)
+        print()
+        self.logs.clear()
         return

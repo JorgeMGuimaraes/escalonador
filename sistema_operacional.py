@@ -37,9 +37,11 @@ def main():
     print()
     while escalonador.continuar_processando():
         imprime_header(quanta)
+        escalonador.atribuir_politica(quanta)
         recursos.imprime_processadores()
         recursos.imprime_memoria()
         recursos.imprime_discos()
+        escalonador.imprime_log_processos()
         escalonador.imprime_andamento(quanta)
         quanta += 1
         _       = input()

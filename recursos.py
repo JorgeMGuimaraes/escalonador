@@ -30,7 +30,7 @@ class Recursos:
         return discos
     ## usa
     def ha_memoria_disponivel(self, necessario) -> bool:
-        return self.memoria_idle > necessario
+        return self.memoria_total - self.memoria_uso > necessario
 
     def usa_memoria(self, quantidade: int) -> None:
         self.memoria_uso    += quantidade
