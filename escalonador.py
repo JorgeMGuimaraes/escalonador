@@ -15,8 +15,10 @@ class Escalonador:
         self.processos_prontos: List[Processo]          = []
         self.processos_prontos_suspenso: List[Processo] = []
         self.processos_executando: List[Processo]       = []
+        # TODO: ver so pode renomear para prontosuspenso
         self.processos_suspensos: List[Processo]        = []
         self.processos_bloqueados: List[Processo]       = []
+        self.processos_bloqueados_suspensos: List[Processo]  = []
         self.processos_finalizados: List[Processo]      = []
 
         self.logs: List[str]                            = []
@@ -33,7 +35,9 @@ class Escalonador:
             'perdeu_processador': 'Perdeu processador e foi encaminhado a lista de prontos.',
             'sera_executado': 'Será executado.',
             'foi_bloqueado': 'Precisa executar uma função IO e foi bloqueado.',
-            'terminou': 'Terminou sua execução.'
+            'bloqueado_suspenso': 'Reservou ao menos uma unidade de disco e entrou na fila de bloqueados-suspensos',
+            'terminou': 'Terminou sua execução.',
+            'pronto_bloqueado': 'Termonou de leitura/escrita e entrou na fila de prontos-bloqueados'
         }
         return
     
@@ -67,12 +71,9 @@ class Escalonador:
 
     def processa_fila_novos(self, quantum: int) -> None:
         for processo in self.processos_novos:
-            if self.recursos.ha_recursos_disponiveis(processo):
+            if self.recursos.ha_memoria_disponivel(processo):
                 processo.define_quantum(quantum)
                 self.recursos.usa_memoria(processo.memoria)
-                for disco in self.recursos.discos:
-                    if disco.pode_agregar(processo):
-                        self.logs.append(f'Processo {processo.id_processo}: Reservou o disco {disco.id_disco}')
                 self.atualiza_estado(processo, self.processos_novos, self.processos_prontos, 'novo_pronto')
 
             else:
@@ -123,8 +124,24 @@ class Escalonador:
         return
 
     def processa_fila_bloqueado(self) -> None:
-        # processa blocks
+        for processo in self.processos_bloqueados:
+            if self.recursos.ha_discos_disponiveis():
+                for disco in self.recursos.discos:
+                    if disco.pode_agregar(processo):
+                        self.atualiza_estado(processo, self.processos_bloqueados, self.processos_bloqueados_suspensos, 'bloqueado_suspenso', novo_estado='bloqueado_suspenso')
+                        self.logs.append(f'Processo {processo.id_processo}: Reservou o disco {disco.id_disco}')
+    
         self.atualiza_andamento_idle(self.processos_bloqueados)
+        return
+
+    def processa_bloqueado_suspenso(self) -> None:
+        self.atualiza_andamento_idle(self.processos_bloqueados_suspensos)
+        for disco in self.recursos.discos:
+            if disco.gravar():
+                self.logs.append(f'Processo {disco.processo_atual.id_processo}: Está lendo/gravando no disco {disco.id_disco}')
+
+        for processo in self.processos_bloqueados_suspensos:
+            self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_bloqueado', 'pronto_suspenso')
         return
 
     def processa_fila_finalizado(self) -> None:

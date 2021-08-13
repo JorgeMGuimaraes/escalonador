@@ -31,6 +31,16 @@ class Recursos:
             discos.append(Disco(i))
         return discos
     ## usa
+    def ha_memoria_disponivel(self, processo: Processo) -> bool:
+        return self.memoria_total - self.memoria_uso > processo.memoria
+
+    def ha_discos_disponiveis(self) -> bool:
+        for disco in self.discos:
+            if disco.disponivel():
+                return True
+        return False
+
+    # TODO: [obsoleto]
     def ha_recursos_disponiveis(self, processo: Processo) -> bool:
         discos_disponiveis = 0
         for disco in self.discos:

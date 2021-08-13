@@ -21,8 +21,12 @@ class Disco:
         return
 
     def disponivel(self) -> bool:
-        return self.estado == estado_disco['idle']
+        return self.processo_atual == None
 
+    def gravar(self) -> bool:
+        if not self.disponivel():
+            return True
+        return False
 
     def define_processo_atual(self, processo: Processo) -> None:
         self.processo_atual = processo

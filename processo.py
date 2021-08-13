@@ -5,6 +5,8 @@ estado = {
     'executando': 2,
     'suspenso': 3,
     'bloqueado': 4,
+    'bloqueado_suspenso': 5,
+    'pronto_suspenso': 6,
     'finalizado': 101
 }
 class Processo:
