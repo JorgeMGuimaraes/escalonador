@@ -1,11 +1,11 @@
-estados = {
-    -1:  'não foi instanciado',
-    0:   'novo',
-    1:   'pronto',
-    2:   'executando',
-    3:   'suspenso',
-    4:   'bloqueado',
-    101: 'finalizado'
+estado = {
+    'nao_instanciado': -1,
+    'novo': 0,
+    'pronto': 1,
+    'executando': 2,
+    'suspenso': 3,
+    'bloqueado': 4,
+    'finalizado': 101
 }
 class Processo:
     def __init__(self, id_processo, chegada, prioridade, duracao, memoria, io) -> None:
@@ -29,6 +29,5 @@ class Processo:
     def atualiza_estado(self, novo_estado: int) -> None:
         if self.estado == novo_estado: return
 
-        print(f'Processo {self.id_processo} muda de estado: de {estados[self.estado]} para {estados[self.estado]}.')
         self.estado = novo_estado
         return

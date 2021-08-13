@@ -1,6 +1,6 @@
 ## imports
 from processador import Processador
-from processo import Processo
+from processo import Processo, estado
 from recursos import Recursos
 from typing import List
 
@@ -35,34 +35,23 @@ class Escalonador:
             if processo.estado < 100: return True
 
         return False
-
-    def politica_fifo(self, processador: Processador) -> None:
-        # se terminou remover de executando, remover de executando
-        processador.processo_atual.executando(True)
-
-        processador.processo_atual.estado = 2
-        processador.processo_atual.duracao -= 1
-        return
-
-    def politica_feedback(self) -> None:
-        # se quantum passou, remover de executando
-        return
-    
+   
     def atribuir_politica(self, quantum: int) -> None:
-        #self.processa_fila_executando()
         #self.processa_fila_bloqueado()
         # self.processa_fila_suspenso()
         self.processar_fila_nao_iniciados(quantum)        
         self.processa_fila_novos()
         self.processa_fila_prontos()
+        self.processa_fila_executando()
         return
     
+    # TODO: Sempre atualizar os estados dos processos
     def processar_fila_nao_iniciados(self, quantum: int) -> None:
         for processo in self.processos_nao_iniciados:
             if processo.chegada == quantum:
                 self.processos_novos.append(processo)
                 self.processos_nao_iniciados.remove(processo)
-                self.logs.append(f'Processo {processo.id_processo} é um novo processo')
+                self.logs.append(f'Processo {processo.id_processo}: é um novo processo')
         return
 
     def processa_fila_novos(self) -> None:
@@ -70,10 +59,10 @@ class Escalonador:
             if self.recursos.ha_memoria_disponivel(processo.memoria):
                 self.recursos.usa_memoria(processo.memoria)
                 self.processos_prontos.append(processo)
-                self.logs.append(f'Processo {processo.id_processo} entrou na fila de prontos')
+                self.logs.append(f'Processo {processo.id_processo}: entrou na fila de prontos')
             else:
                 self.processos_prontos_suspenso.append(processo)
-                self.logs.append(f'Processo {processo.id_processo} entrou na fila de prontos-suspensos')
+                self.logs.append(f'Processo {processo.id_processo}: entrou na fila de prontos-suspensos')
             self.processos_novos.remove(processo)
         return
 
@@ -85,7 +74,7 @@ class Escalonador:
                     processo.estado             = 2
                     self.processos_executando.append(processo)
                     self.processos_prontos.remove(processo)
-                    self.logs.append(f'Processo {processo.id_processo} será executado.')
+                    self.logs.append(f'Processo {processo.id_processo}: será executado.')
                     break
         return
 
@@ -93,37 +82,33 @@ class Escalonador:
         tempo_real  = 0
         usuario     = 1
 
+        # processa
+        for processador in self.recursos.processadores:
+            if processador.processo_atual is not None:
+                processador.executar()
+                self.logs.append(f'Processo {processador.id_processador}: executando o Core {processador.processo_atual.id_processo}')
+
         for processo in self.processos_executando:
-            if processo.estado == 1: # pronto
+            #continua executando
+            if processo.estado == estado['executando']:
+                continue
+            #vai para pronto
+            elif processo.estado == estado['pronto']:
+                self.processos_prontos.append(processo)
+                self.processos_executando.remove(processo)
+                self.logs.append(f'Processo {processo.id_processo} perdeu processador e foi encaminhado a lista de prontos.')
+            #vai para bloqueado
+            elif processo.estado == estado['bloqueado']:
+                self.processos_bloqueados.append(processo)
+                self.processos_executando.remove(processo)
+                self.logs.append(f'Processo {processo.id_processo} precisa executar uma função IO e foi bloqueado.')
+            #vai para terminado
+            elif processo.estado == estado['finalizado']:
+                self.processos_executando.remove(processo)
+                self.logs.append(f'Processo {processo.id_processo} terminou sua execução.')
                 for processador in self.recursos.processadores:
                     if processador.processo_atual is None:
                         processador.processo_atual = processo
-                pass
-            elif processo.estado == 2: # executando
-                #checa se ainda pode executar
-                    #se nao pode: atualiza estado, mode de fila
-                pass
-
-
-
-        # atribui processador
-        for processador in self.recursos.processadores:
-            if processador.processo_atual is None:
-                pass
-            else:
-                pass
-            for processo in self.processos_executando:
-                if processo.estado == 1:
-                    processo.estado = 2
-                    processador.processo_atual = processo
-        # processa
-        for processador in self.recursos.processadores:
-            prioridade  = processador.processo_atual.prioridade
-            if prioridade == usuario:
-                processador.executar(self.politica_feedback)
-                continue
-
-            processador.executar(self.politica_fifo)
         return
 
     def processa_fila_suspenso(self) -> None:

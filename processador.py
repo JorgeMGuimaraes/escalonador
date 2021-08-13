@@ -13,6 +13,10 @@ class Processador:
         print(f'Processo {processo.id_processo} foi atribuido ao Processador {self.id_processador}')
         return
 
-    def executar(self, politica) -> None:
-        politica(self.processo_atual)
+    def executar(self) -> None:
+        if self.processo_atual.prioridade == 0:
+            politica = 'fifo'
+        else:
+            politica = 'feedback'
+        print(f'Processo {self.processo_atual.id_processo} executando no processador {self.id_processador} com a política {politica}')
         return
