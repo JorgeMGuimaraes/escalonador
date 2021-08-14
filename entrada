@@ -1,6 +1,4 @@
-#<arrival time>,    <priority>, <processor time>,   <#Mbytes>,  <# disco>
-3,                  0,          2,                  64,         0
-2,                  1,          4,                  128,        1
-4,                  1,          3,                  512,        2
-1,                  0,          4,                  512,        0
-1,                  1,          4,                  512,        2
+#<arrival time>, <priority>, <processor time>, <#Mbytes>, <# disco>
+3, 0, 2, 64, 0
+2, 1, 4, 128, 1
+4, 1, 3, 512, 2
