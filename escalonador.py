@@ -174,8 +174,8 @@ class Escalonador:
         if novo_estado:
             processo.estado = estado[novo_estado]
         self.logs.append(f'Processo {processo.id_processo}: {self.mensagens[msg]}')
-        # TODO: pass?
-        pass
+        return
+
     ## exibe
     def imprime_processos_recebidos(self) -> None:
         for processo in self.processos:
