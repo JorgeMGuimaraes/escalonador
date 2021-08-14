@@ -53,8 +53,8 @@ class Escalonador:
         return False
    
     def atribuir_politica(self, contador_quanta: int, quantum: int) -> None:
-        self.processa_bloqueado_suspenso()
         self.processa_fila_prontos_suspensos()
+        self.processa_bloqueado_suspenso()
         self.processa_fila_bloqueado()
         self.processa_fila_nao_iniciados(contador_quanta)        
         self.processa_fila_novos(quantum)
@@ -127,14 +127,17 @@ class Escalonador:
         return
 
     def processa_fila_bloqueado(self) -> None:
+        self.atualiza_andamento_idle(self.processos_bloqueados)
         for processo in self.processos_bloqueados:
             if self.recursos.ha_discos_disponiveis():
                 for disco in self.recursos.discos:
                     if disco.pode_agregar(processo):
-                        self.atualiza_estado(processo, self.processos_bloqueados, self.processos_bloqueados_suspensos, 'bloqueado_suspenso', novo_estado='bloqueado_suspenso')
                         self.logs.append(f'Processo {processo.id_processo}: Reservou o disco {disco.id_disco}')
-    
-        self.atualiza_andamento_idle(self.processos_bloqueados)
+        
+        for processo in self.processos_bloqueados:
+            if processo.discos == 0:
+                self.atualiza_estado(processo, self.processos_bloqueados, self.processos_bloqueados_suspensos, 'bloqueado_suspenso', novo_estado='bloqueado_suspenso')
+
         return
 
     def processa_bloqueado_suspenso(self) -> None:
@@ -143,12 +146,14 @@ class Escalonador:
             for disco in self.recursos.discos:
                 if disco.gravar(processo):
                     self.logs.append(f'Processo {processo.id_processo}: Está lendo/gravando no disco {disco.id_disco}')
-                    if processo.terminou_de_processar():
-                        self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_finalizados, 'terminou', novo_estado='finalizado')
-                        disco.liberar()
-                    else:
-                        self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_suspenso', novo_estado='pronto_suspenso')
-                        disco.liberar()
+                    disco.liberar()
+
+            if processo.necessita_disco():
+                continue
+            elif processo.terminou_de_processar():
+                self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_finalizados, 'terminou', novo_estado='finalizado')
+            else:
+                self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_suspenso', novo_estado='pronto_suspenso')
 
         for processo in self.processos_bloqueados_suspensos:
             self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_bloqueado', 'pronto_suspenso')
