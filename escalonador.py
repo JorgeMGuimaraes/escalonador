@@ -62,11 +62,10 @@ class Escalonador:
         self.processa_fila_executando()
         return
     
-    # TODO: Sempre atualizar os estados dos processos
     def processa_fila_nao_iniciados(self, contador_quanta: int) -> None:
         for processo in self.processos_nao_iniciados:
             if processo.chegada == contador_quanta:
-                self.atualiza_estado(processo, self.processos_nao_iniciados, self.processos_novos, 'novo')
+                self.atualiza_estado(processo, self.processos_nao_iniciados, self.processos_novos, 'novo', estado['novo'])
         self.atualiza_andamento_idle(self.processos_nao_iniciados)
         return
 
@@ -75,17 +74,17 @@ class Escalonador:
             if self.recursos.ha_memoria_disponivel(processo):
                 processo.define_quantum(quantum)
                 self.recursos.usa_memoria(processo.memoria)
-                self.atualiza_estado(processo, self.processos_novos, self.processos_prontos, 'novo_pronto')
+                self.atualiza_estado(processo, self.processos_novos, self.processos_prontos, 'novo_pronto', estado['pronto'])
 
             else:
-                self.atualiza_estado(processo, self.processos_novos, self.processos_prontos_suspenso, 'pronto_suspenso')
+                self.atualiza_estado(processo, self.processos_novos, self.processos_prontos_suspenso, 'pronto_suspenso', estado['pronto_suspenso'])
         return
 
     def processa_fila_prontos(self) -> None:
         for processo in self.processos_prontos:
             for processador in self.recursos.processadores:
                 if processador.pode_agregar(processo):
-                    self.atualiza_estado(processo, self.processos_prontos, self.processos_executando, 'sera_executado')
+                    self.atualiza_estado(processo, self.processos_prontos, self.processos_executando, 'sera_executado', estado['executando'])
                     break
 
         self.atualiza_andamento_idle(self.processos_prontos)
@@ -104,17 +103,17 @@ class Escalonador:
                 continue
             #vai para pronto
             elif processo.estado == estado['pronto']:
-                self.atualiza_estado(processo, self.processos_executando, self.processos_prontos, 'perdeu_processador')
+                self.atualiza_estado(processo, self.processos_executando, self.processos_prontos, 'perdeu_processador', estado['pronto'])
                 for processador in self.recursos.processadores:
                     processador.liberar(processo)
             #vai para bloqueado
             elif processo.estado == estado['bloqueado']:
-                self.atualiza_estado(processo, self.processos_executando, self.processos_bloqueados, 'foi_bloqueado', novo_estado='bloqueado')
+                self.atualiza_estado(processo, self.processos_executando, self.processos_bloqueados, 'foi_bloqueado', estado['bloqueado'])
                 for processador in self.recursos.processadores:
                     processador.liberar(processo)
             #vai para terminado
             elif processo.estado == estado['finalizado']:
-                self.atualiza_estado(processo, self.processos_executando, self.processos_finalizados, 'terminou')
+                self.atualiza_estado(processo, self.processos_executando, self.processos_finalizados, 'terminou', estado['finalizado'])
                 for processador in self.recursos.processadores:
                     processador.liberar(processo)
                     self.recursos.libera_memoria(processo.memoria)
@@ -136,7 +135,7 @@ class Escalonador:
         
         for processo in self.processos_bloqueados:
             if processo.discos == 0:
-                self.atualiza_estado(processo, self.processos_bloqueados, self.processos_bloqueados_suspensos, 'bloqueado_suspenso', novo_estado='bloqueado_suspenso')
+                self.atualiza_estado(processo, self.processos_bloqueados, self.processos_bloqueados_suspensos, 'bloqueado_suspenso', estado['bloqueado_suspenso'])
 
         return
 
@@ -151,12 +150,12 @@ class Escalonador:
             if processo.necessita_disco():
                 continue
             elif processo.terminou_de_processar():
-                self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_finalizados, 'terminou', novo_estado='finalizado')
+                self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_finalizados, 'terminou', estado['finalizado'])
             else:
-                self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_suspenso', novo_estado='pronto_suspenso')
+                self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_suspenso', estado['pronto_suspenso'])
 
         for processo in self.processos_bloqueados_suspensos:
-            self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_bloqueado', 'pronto_suspenso')
+            self.atualiza_estado(processo, self.processos_bloqueados_suspensos, self.processos_prontos_suspenso, 'pronto_bloqueado', estado['pronto_suspenso'])
         return
 
     def processa_fila_finalizado(self) -> None:
@@ -168,11 +167,10 @@ class Escalonador:
             processo.aguardando()
         return
     
-    def atualiza_estado(self, processo: Processo, lista_atual: List[Processo], lista_nova: List[Processo], msg: str, novo_estado: str=None):
+    def atualiza_estado(self, processo: Processo, lista_atual: List[Processo], lista_nova: List[Processo], msg: str, novo_estado: int):
         lista_nova.append(processo)
         lista_atual.remove(processo)
-        if novo_estado:
-            processo.estado = estado[novo_estado]
+        processo.estado = novo_estado
         self.logs.append(f'Processo {processo.id_processo}: {self.mensagens[msg]}')
         return
 
