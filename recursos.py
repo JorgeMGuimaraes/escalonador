@@ -52,8 +52,8 @@ class Recursos:
         self.memoria_uso    += quantidade
         return
 
-    def libera_memoria(self, quantidade: int) -> None:
-        self.memoria_uso    -= quantidade
+    def libera_memoria(self, thread: Processo) -> None:
+        self.memoria_uso    -= thread.memoria
         return
 
     ## exibe

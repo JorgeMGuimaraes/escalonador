@@ -219,7 +219,7 @@ class Escalonador:
                 self.adiciona_ao_log(feedback_operacao)
                 for processador in self.recursos.processadores:
                     processador.liberar(processo)
-                    self.recursos.libera_memoria(processo.memoria)
+                    self.recursos.libera_memoria(processo)
         return
 
     def atualiza_estado_idle(self, quantum: int) -> None:
