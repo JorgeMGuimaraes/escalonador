@@ -23,29 +23,24 @@ class Disco:
     def disponivel(self) -> bool:
         return self.processo_atual == None
 
-    def gravar(self, processo: Processo) -> bool:
-        if self.processo_atual == processo:
-            self.processo_atual = None
-            return True
-        return False
+    def gravar(self) -> bool:
+        if self.disponivel():
+            return False
+        
+        return True
 
     def define_processo_atual(self, processo: Processo) -> None:
         self.processo_atual = processo
         # TODO: ver se podemos remover esse print
-        print(f'Disco {self.id} foi atribuido ao Processo {processo.id_processo}')
+        print(f'Disco {self.id_disco} foi atribuido ao Processo {processo.id_processo}')
         return
     
     def pode_agregar(self, processo: Processo) -> bool:
         if self.processo_atual is None and processo.discos > 0:
             processo.discos     -= 1
-            self.processo_atual = processo
+            self.define_processo_atual(processo)
             return True
         return False
-
-    # def liberar(self, processo: Processo):
-    #     if self.processo_atual == processo:
-    #         self.processo_atual = None
-    #     return
 
     def liberar(self):
         self.processo_atual = None
