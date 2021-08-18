@@ -15,4 +15,4 @@ class EstadoProcesso:
         self.proximo.append(processo)
         self.atual.remove(processo)
         processo.estado = self.estado
-        return self.msg_padrao
+        return f'Processo {processo.id_processo}: {self.msg_padrao}'
