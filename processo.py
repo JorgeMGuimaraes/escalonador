@@ -10,7 +10,7 @@ estado = {
     'finalizado': 101
 }
 class Processo:
-    def __init__(self, id_processo, chegada, prioridade, duracao, memoria, discos) -> None:
+    def __init__(self, id_processo: int, chegada: int, prioridade: int, duracao: int, memoria: int, discos: int) -> None:
         self.id_processo    = id_processo
         self.chegada        = chegada
         self.prioridade     = prioridade
