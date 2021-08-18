@@ -145,18 +145,23 @@ class Escalonador:
         return
 
     def executa_leitura_gravacao(self) -> None:
+        threads_gravaram = []
         for disco in self.recursos.discos:
             if not disco.gravar():
                 continue
 
             processo                = disco.processo_atual
             disco.processo_atual    = None
+            if processo not in threads_gravaram:
+                threads_gravaram.append(processo)
+
             if processo.necessita_disco():
                 feedback_operacao = self.executar_operacao['Suspende bloqueado para bloqueado-suspenso'].neste(processo)
                 self.adiciona_ao_log(feedback_operacao)
                 continue
-
-            feedback_operacao = self.executar_operacao['Evento ocorre, e vai para pronto'].neste(processo)
+        
+        for thread in threads_gravaram:
+            feedback_operacao = self.executar_operacao['Evento ocorre, e vai para pronto'].neste(thread)
             self.adiciona_ao_log(feedback_operacao)
         return
 
