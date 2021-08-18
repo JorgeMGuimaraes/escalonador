@@ -26,67 +26,67 @@ class Escalonador:
             'Instanciar':                                   EstadoProcesso( atual=self.processos_nao_iniciados,
                                                                             proximo=self.processos_novos,
                                                                             estado=estado['novo'],
-                                                                            msg_padrao='Novo processo instanciado em memória.'),
+                                                                            msg_padrao='Novo processo instanciado em memória'),
 
             'Admitir como pronto-suspenso':                 EstadoProcesso( atual=self.processos_novos,
                                                                             proximo=self.processos_prontos_suspenso,
                                                                             estado=estado['pronto_suspenso'],
-                                                                            msg_padrao='Foi para prontos_suspensos'),
+                                                                            msg_padrao='Foi admitido como pronto-suspenso'),
 
             'Admitir como pronto':                          EstadoProcesso( atual=self.processos_novos,
                                                                             proximo=self.processos_prontos,
                                                                             estado=estado['pronto'],
-                                                                            msg_padrao='Foi para prontos'),
+                                                                            msg_padrao='Foi admitido pronto'),
 
             'Ativar pronto-suspenso para pronto':           EstadoProcesso( atual=self.processos_prontos_suspenso,
                                                                             proximo=self.processos_prontos,
                                                                             estado=estado['pronto'],
-                                                                            msg_padrao='Foi ativado'),
+                                                                            msg_padrao='Estava como pronto-suspenso e foi ativado. Está como pronto'),
 
             'Suspender pronto para pronto-suspenso':        EstadoProcesso( atual=self.processos_prontos,
                                                                             proximo=self.processos_prontos_suspenso,
                                                                             estado=estado['pronto_suspenso'],
-                                                                            msg_padrao='Foi Suspenso'),
+                                                                            msg_padrao='Foi suspenso para o estado pronto-suspenso'),
 
             'Despachar pronto para executando':             EstadoProcesso( atual=self.processos_prontos,
                                                                             proximo=self.processos_executando,
                                                                             estado=estado['executando'],
-                                                                            msg_padrao='Foi despachado.'),
+                                                                            msg_padrao='Foi despachado para execução'),
 
             'Pausar executando para pronto':                EstadoProcesso( atual=self.processos_executando,
                                                                             proximo=self.processos_prontos,
                                                                             estado=estado['pronto'],
-                                                                            msg_padrao='Foi pausado para pronto.'),
+                                                                            msg_padrao='Estava executando e perdeu processador. Foi pausado e está no estado pronto'),
 
             'Bloqueia executando':                          EstadoProcesso( atual=self.processos_executando,
                                                                             proximo=self.processos_bloqueados,
                                                                             estado=estado['bloqueado'],
-                                                                            msg_padrao='Espera ocorrer evento.'),
+                                                                            msg_padrao='Estava escutando mas precisa ler/gravar. Foi bloqueado a espera de ocorrer evento'),
 
             'Evento ocorre, e vai para pronto':              EstadoProcesso( atual=self.processos_bloqueados,
                                                                             proximo=self.processos_prontos,
                                                                             estado=estado['pronto'],
-                                                                            msg_padrao='Evento ocorre, e vai para pronto.'),
+                                                                            msg_padrao='Evento de leitura/escrita ocorreu e vai para pronto'),
 
             'Suspende bloqueado para bloqueado-suspenso':   EstadoProcesso( atual=self.processos_bloqueados,
                                                                             proximo=self.processos_bloqueados_suspensos,
                                                                             estado=estado['bloqueado_suspenso'],
-                                                                            msg_padrao='Suspende bloqueado para bloqueado-suspenso.'),
+                                                                            msg_padrao='Não há discos disponíveis, Suspende bloqueado para bloqueado-suspenso'),
 
             'Ativa suspenso-bloqueado para bloquado':       EstadoProcesso( atual=self.processos_bloqueados_suspensos,
                                                                             proximo=self.processos_bloqueados,
                                                                             estado=estado['bloqueado'],
-                                                                            msg_padrao='Ativa suspenso-bloqueado para pronto-suspenso.'),
+                                                                            msg_padrao='Há discos disponíveis. Ativa suspenso-bloqueado para pronto-suspenso'),
 
             'Evento ocorre, e vai para pronto-suspenso':    EstadoProcesso( atual=self.processos_bloqueados_suspensos,
                                                                             proximo=self.processos_prontos_suspenso,
                                                                             estado=estado['pronto_suspenso'],
-                                                                            msg_padrao='Evento ocorre, e vai para pronto-suspenso.'),
+                                                                            msg_padrao='Evento ocorre, e vai para pronto-suspenso'),
 
             'Libera executando para finalizado':            EstadoProcesso( atual=self.processos_executando,
                                                                             proximo=self.processos_finalizados,
                                                                             estado=estado['finalizado'],
-                                                                            msg_padrao='Libera executando para finalizado.')
+                                                                            msg_padrao='Processo terminou')
 
         }
         self.logs: List[str]                                = []
