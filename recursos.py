@@ -74,6 +74,8 @@ class Recursos:
 
     def imprime_discos(self) -> None:
         for disco in self.discos:
-            atual = 'Idle' if disco.estado == estado_disco['idle'] else 'Leitura/Escrita'
-            print(f'Disco {disco.id_disco}: {atual}')
+            if disco.disponivel():
+                print(f'Disco {disco.id_disco}: idle')
+            else:
+                print(f'Disco {disco.id_disco}: Reservado para thread {disco.processo_atual.id_processo} no estado {disco.processo_atual.estado}')
         return
