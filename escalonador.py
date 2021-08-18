@@ -120,17 +120,49 @@ class Escalonador:
 
         return False
    
-    def atribuir_politica(self, contador_quanta: int, quantum: int) -> None:
-        self.processa_fila_prontos_suspensos()
-        self.processa_bloqueado_suspenso()
-        self.processa_fila_bloqueado()
-        self.processa_fila_nao_iniciados(contador_quanta)        
-        self.processa_fila_novos(quantum)
-        self.processa_fila_prontos()
-        self.processa_fila_executando()
+    def ativa_prontos_suspensos(self) -> None:
+        for processo in self.processos_prontos_suspenso:
+            if self.recursos.ha_memoria_disponivel():
+                feedback_operacao = self.executar_operacao['Ativar pronto-suspenso para pronto'].neste(processo)
+                self.adiciona_ao_log(feedback_operacao)
+
+        self.atualiza_andamento_idle(self.processos_prontos_suspenso)
         return
-    
-    def processa_fila_nao_iniciados(self, contador_quanta: int) -> None:
+
+    def reserva_discos(self) -> None:
+        for processo in self.processos_bloqueados_suspensos:
+            if self.recursos.ha_discos_disponiveis():
+                for disco in self.recursos.discos:
+                    if disco.pode_agregar(processo):
+                        feedback_operacao = self.executar_operacao['Ativa suspenso-bloqueado para bloquado'].neste(processo)
+                        self.adiciona_ao_log(feedback_operacao)
+
+        for processo in self.processos_bloqueados:
+            if self.recursos.ha_discos_disponiveis():
+                for disco in self.recursos.discos:
+                    disco.pode_agregar(processo)
+            else:
+                feedback_operacao = self.executar_operacao['Suspende bloqueado para bloqueado-suspenso'].neste(processo)
+                self.adiciona_ao_log(feedback_operacao)
+        return
+
+    def executa_leitura_gravacao(self) -> None:
+        for disco in self.recursos.discos:
+            if not disco.novo_gravar():
+                continue
+
+            processo                = disco.processo_atual
+            disco.processo_atual    = None
+            if processo.necessita_disco():
+                feedback_operacao = self.executar_operacao['Suspende bloqueado para bloqueado-suspenso'].neste(processo)
+                self.adiciona_ao_log(feedback_operacao)
+                continue
+
+            feedback_operacao = self.executar_operacao['Evento ocorre, e vai para pronto'].neste(processo)
+            self.adiciona_ao_log(feedback_operacao)
+        return
+
+    def instanciar_processos(self, contador_quanta: int) -> None:
         for processo in self.processos_nao_iniciados:
             if processo.chegada == contador_quanta:
                 feedback_operacao = self.executar_operacao['Instanciar'].neste(processo)
@@ -138,10 +170,9 @@ class Escalonador:
         self.atualiza_andamento_idle(self.processos_nao_iniciados)
         return
 
-    def processa_fila_novos(self, quantum: int) -> None:
+    def admitir_processos(self) -> None:
         for processo in self.processos_novos:
             if self.recursos.ha_memoria_disponivel(processo):
-                processo.define_quantum(quantum)
                 self.recursos.usa_memoria(processo.memoria)
                 feedback_operacao = self.executar_operacao['Admitir como pronto'].neste(processo)
                 self.adiciona_ao_log(feedback_operacao)
@@ -149,8 +180,8 @@ class Escalonador:
                 feedback_operacao = self.executar_operacao['Admitir como pronto-suspenso'].neste(processo)
                 self.adiciona_ao_log(feedback_operacao)
         return
-
-    def processa_fila_prontos(self) -> None:
+    
+    def despachar(self) -> None:
         for processo in self.processos_prontos:
             for processador in self.recursos.processadores:
                 if processador.pode_agregar(processo):
@@ -161,7 +192,7 @@ class Escalonador:
         self.atualiza_andamento_idle(self.processos_prontos)
         return
 
-    def processa_fila_executando(self) -> None:
+    def processar_threads(self) -> None:
         self.atualiza_andamento_idle(self.processos_finalizados)
         # processa
         for processador in self.recursos.processadores:
@@ -193,46 +224,8 @@ class Escalonador:
                     self.recursos.libera_memoria(processo.memoria)
         return
 
-    def processa_fila_prontos_suspensos(self) -> None:
-        for processo in self.processos_prontos_suspenso:
-            feedback_operacao = self.executar_operacao['Ativar pronto-suspenso para pronto'].neste(processo)
-            self.adiciona_ao_log(feedback_operacao)
 
-        self.atualiza_andamento_idle(self.processos_prontos_suspenso)
-        return
-
-    def processa_fila_bloqueado(self) -> None:
-        self.atualiza_andamento_idle(self.processos_bloqueados)
-        for processo in self.processos_bloqueados:
-            if self.recursos.ha_discos_disponiveis():
-                for disco in self.recursos.discos:
-                    if disco.pode_agregar(processo):
-                        self.logs.append(f'Processo {processo.id_processo}: Reservou o disco {disco.id_disco}')
-        
-        for processo in self.processos_bloqueados:
-            if processo.discos == 0:
-                feedback_operacao = self.executar_operacao['Suspende bloqueado para bloqueado-suspenso'].neste(processo)
-                self.adiciona_ao_log(feedback_operacao)
-
-        return
-
-    def processa_bloqueado_suspenso(self) -> None:
-        self.atualiza_andamento_idle(self.processos_bloqueados_suspensos)
-        for processo in self.processos_bloqueados_suspensos:
-            for disco in self.recursos.discos:
-                if disco.gravar(processo):
-                    self.logs.append(f'Processo {processo.id_processo}: Está lendo/gravando no disco {disco.id_disco}')
-                    disco.liberar()
-
-            if processo.necessita_disco():
-                feedback_operacao = self.executar_operacao['Ativa suspenso-bloqueado para bloquado'].neste(processo)
-                self.adiciona_ao_log(feedback_operacao)
-            else:
-                feedback_operacao = self.executar_operacao['Evento ocorre, e vai para pronto-suspenso'].neste(processo)
-                self.adiciona_ao_log(feedback_operacao)
-        return
-
-    def processa_fila_finalizado(self) -> None:
+    def atualiza_tela_finalizados(self) -> None:
         self.atualiza_andamento_idle(self.processos_finalizados)
         return
 
@@ -241,13 +234,6 @@ class Escalonador:
             processo.aguardando()
         return
     
-    def atualiza_estado(self, processo: Processo, lista_atual: List[Processo], lista_nova: List[Processo], msg: str, novo_estado: int):
-        lista_nova.append(processo)
-        lista_atual.remove(processo)
-        processo.estado = novo_estado
-        self.logs.append(f'Processo {processo.id_processo}: {self.mensagens[msg]}')
-        return
-
     def adiciona_ao_log(self, feedback: str) -> None:
         self.logs.append(feedback)
         return

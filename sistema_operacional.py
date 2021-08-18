@@ -54,7 +54,15 @@ def main():
     print()
     while escalonador.continuar_processando():
         imprime_header(contador_quanta)
-        escalonador.atribuir_politica(contador_quanta, quantum)
+
+        escalonador.ativa_prontos_suspensos()
+        escalonador.executa_leitura_gravacao()
+        escalonador.reserva_discos()
+        escalonador.instanciar_processos(contador_quanta)
+        escalonador.admitir_processos()
+        escalonador.despachar()
+        escalonador.processar_threads()
+        escalonador.atualiza_tela_finalizados()
         recursos.imprime_processadores()
         recursos.imprime_memoria()
         recursos.imprime_discos()
