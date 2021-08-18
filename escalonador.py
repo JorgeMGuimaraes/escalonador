@@ -95,7 +95,7 @@ class Escalonador:
             self.processos_nao_iniciados.append(processo)
 
         self.recursos                                       = recursos
-
+        # TODO: remover mgs desnecessarias
         self.mensagens                                      = {
             'novo': 'Novo processo instanciado em memória',
             'novo_pronto': 'Entrou na fila de prontos.',
@@ -125,8 +125,6 @@ class Escalonador:
             if self.recursos.ha_memoria_disponivel():
                 feedback_operacao = self.executar_operacao['Ativar pronto-suspenso para pronto'].neste(processo)
                 self.adiciona_ao_log(feedback_operacao)
-
-        self.atualiza_andamento_idle(self.processos_prontos_suspenso)
         return
 
     def reserva_discos(self) -> None:
@@ -148,7 +146,7 @@ class Escalonador:
 
     def executa_leitura_gravacao(self) -> None:
         for disco in self.recursos.discos:
-            if not disco.novo_gravar():
+            if not disco.gravar():
                 continue
 
             processo                = disco.processo_atual
@@ -167,7 +165,6 @@ class Escalonador:
             if processo.chegada == contador_quanta:
                 feedback_operacao = self.executar_operacao['Instanciar'].neste(processo)
                 self.adiciona_ao_log(feedback_operacao)
-        self.atualiza_andamento_idle(self.processos_nao_iniciados)
         return
 
     def admitir_processos(self) -> None:
@@ -189,11 +186,9 @@ class Escalonador:
                     self.adiciona_ao_log(feedback_operacao)
                     break
 
-        self.atualiza_andamento_idle(self.processos_prontos)
         return
 
     def processar_threads(self) -> None:
-        self.atualiza_andamento_idle(self.processos_finalizados)
         # processa
         for processador in self.recursos.processadores:
             if processador.pode_executar():
@@ -224,16 +219,14 @@ class Escalonador:
                     self.recursos.libera_memoria(processo.memoria)
         return
 
-
-    def atualiza_tela_finalizados(self) -> None:
-        self.atualiza_andamento_idle(self.processos_finalizados)
+    def atualiza_estado_idle(self, quantum: int) -> None:
+        for processo in self.processos:
+            if processo in self.processos_executando:
+                continue
+            if len(processo.andamento) <= quantum:
+                processo.aguardando()
         return
 
-    def atualiza_andamento_idle(self, processos: List[Processo]) -> None:
-        for processo in processos:
-            processo.aguardando()
-        return
-    
     def adiciona_ao_log(self, feedback: str) -> None:
         self.logs.append(feedback)
         return
