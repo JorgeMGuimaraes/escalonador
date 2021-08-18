@@ -61,7 +61,7 @@ class Escalonador:
             'Bloqueia executando':                          EstadoProcesso( atual=self.processos_executando,
                                                                             proximo=self.processos_bloqueados,
                                                                             estado=estado['bloqueado'],
-                                                                            msg_padrao='Estava escutando mas precisa ler/gravar. Foi bloqueado a espera de ocorrer evento'),
+                                                                            msg_padrao='Estava executando mas precisa ler/gravar. Foi bloqueado a espera de ocorrer evento'),
 
             'Evento ocorre, e vai para pronto':              EstadoProcesso( atual=self.processos_bloqueados,
                                                                             proximo=self.processos_prontos,
