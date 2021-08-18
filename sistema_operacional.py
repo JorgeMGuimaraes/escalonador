@@ -62,10 +62,12 @@ def main():
         escalonador.admitir_processos()
         escalonador.despachar()
         escalonador.processar_threads()
-        escalonador.atualiza_tela_finalizados()
+        escalonador.atualiza_estado_idle(contador_quanta)
+
         recursos.imprime_processadores()
         recursos.imprime_memoria()
         recursos.imprime_discos()
+
         escalonador.imprime_log_processos()
         escalonador.imprime_andamento(contador_quanta)
         contador_quanta += 1
