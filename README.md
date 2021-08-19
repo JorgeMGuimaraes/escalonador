@@ -43,7 +43,7 @@ Arquivo de texto estruturado contendo os processos a serem executados. Podem est
 Responsável por coordenar os estados dos processos, quando são instanciados ou liberados, e seus fluxos conforme o diagrama de sete estados.
 
 ![Diagrama de sete estados](estados.png)
-_Diagrama de sete estados_
+_Diagrama de sete estados_*
 
 ### ```Recursos```
 
@@ -63,7 +63,7 @@ Imagem do programa a ser executado. Tem noção própria de quando terminar, se 
 
 ### ```EstadoProcesso```
 
-Auxilia na gestão de estado de um processo. em seu método ```neste()``` dá-se a mudança de estado. Sua chamada visa uma mudança clara no estado do processo:
+Auxilia na gestão de estado de um processo. Em seu método ```neste()``` dá-se a mudança de estado. Sua chamada visa uma mudança clara no estado do processo:
 
 ```python
 # No escalonador ...
@@ -81,14 +81,16 @@ executar_bloqueio.neste(processo)
 
 ## Nota Ao Orientador
 
-No último commit a exibição da memória usada passou a falhar, mostrando as vezes númerosa negativos. Pode ser visto no arquivo de saída.
+No último commit a exibição da memória usada passou a falhar, mostrando as vezes números negativos. Pode ser visto no arquivo de saída.
 
 ## Gostei, Posso Usar Ou Copiar?
 
-Pode. POde copiar, mudar o código e até vender, desde que distribua sob a mesma licença, MIT (ver arquivo LICENSE).
+Pode. Pode copiar, mudar o código e até vender, desde que distribua sob a mesma licença, MIT (ver arquivo LICENSE).
 
 Não custa nada dar o crédito aos desenvolvedores :) 
 Se gostou comunique-nos.
+
+> \* A imagem do diagrama pertence a Profa. Cristina Boeres - Universidade Federal Fluminense
 
 ## Acho Quer Posso Fazer Melhor?
 
