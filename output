@@ -1,0 +1,523 @@
+Processo 1: chegada no momento 2, prioridade 1 (usuário), duração de 4 segundos de CPU e memória de 128 MBytes, requer 1 unidade(s) de disco(s) disco(s)
+Processo 0: chegada no momento 3, prioridade 0 (tempo real), duração de 2 segundos de CPU e memória de 64 MBytes, sem necessidade de recursos de E/S disco(s)
+Processo 2: chegada no momento 4, prioridade 1 (usuário), duração de 3 segundos de CPU e memória de 512 MBytes, requer 2 unidade(s) de disco(s) disco(s)
+Processo 4: chegada no momento 5, prioridade 1 (usuário), duração de 6 segundos de CPU e memória de 64 MBytes, requer 2 unidade(s) de disco(s) disco(s)
+Processo 3: chegada no momento 6, prioridade 0 (tempo real), duração de 8 segundos de CPU e memória de 512 MBytes, sem necessidade de recursos de E/S disco(s)
+Processo 5: chegada no momento 7, prioridade 0 (tempo real), duração de 7 segundos de CPU e memória de 128 MBytes, sem necessidade de recursos de E/S disco(s)
+
+Estado Atual:
+Quantum: 0
+
+Processador 0: Idle
+Processador 1: Idle
+Processador 2: Idle
+Processador 3: Idle
+Memória em uso:            0MB
+Memória disponível:    16384MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+
+Andamento:
+                 | 0|
+
+    Processo  1: |  |
+
+    Processo  0: |  |
+
+    Processo  2: |  |
+
+    Processo  4: |  |
+
+    Processo  3: |  |
+
+    Processo  5: |  |
+
+Estado Atual:
+Quantum: 1
+
+Processador 0: Idle
+Processador 1: Idle
+Processador 2: Idle
+Processador 3: Idle
+Memória em uso:            0MB
+Memória disponível:    16384MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+
+Andamento:
+                 | 0| 1|
+
+    Processo  1: |  |  |
+
+    Processo  0: |  |  |
+
+    Processo  2: |  |  |
+
+    Processo  4: |  |  |
+
+    Processo  3: |  |  |
+
+    Processo  5: |  |  |
+
+Estado Atual:
+Quantum: 2
+
+Processador 0: Idle
+Processador 1: Idle
+Processador 2: Idle
+Processador 3: Idle
+Memória em uso:          128MB
+Memória disponível:    16256MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 1: Novo processo instanciado em memória
+Processo 1: Foi admitido pronto
+Processo 1: Foi despachado para execução
+Processo 1: Executou no Core 0
+Processo 1: Estava executando mas precisa ler/gravar. Foi bloqueado a espera de ocorrer evento
+
+Andamento:
+                 | 0| 1| 2|
+
+    Processo  1: |  |  |* |
+
+    Processo  0: |  |  |  |
+
+    Processo  2: |  |  |  |
+
+    Processo  4: |  |  |  |
+
+    Processo  3: |  |  |  |
+
+    Processo  5: |  |  |  |
+
+Estado Atual:
+Quantum: 3
+
+Disco 0 foi atribuido ao Processo 1
+Processador 0: Processo 0
+Processador 1: Idle
+Processador 2: Idle
+Processador 3: Idle
+Memória em uso:          192MB
+Memória disponível:    16192MB
+Memória total:         16384MB
+Disco 0: Reservado para thread 1 no estado 4
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 0: Novo processo instanciado em memória
+Processo 0: Foi admitido pronto
+Processo 0: Foi despachado para execução
+Processo 0: Executou no Core 0
+
+Andamento:
+                 | 0| 1| 2| 3|
+
+    Processo  1: |  |  |* |  |
+
+    Processo  0: |  |  |  |* |
+
+    Processo  2: |  |  |  |  |
+
+    Processo  4: |  |  |  |  |
+
+    Processo  3: |  |  |  |  |
+
+    Processo  5: |  |  |  |  |
+
+Estado Atual:
+Quantum: 4
+
+Processador 0: Idle
+Processador 1: Processo 1
+Processador 2: Idle
+Processador 3: Idle
+Memória em uso:          448MB
+Memória disponível:    15936MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 1: Evento de leitura/escrita ocorreu e vai para pronto
+Processo 2: Novo processo instanciado em memória
+Processo 2: Foi admitido pronto
+Processo 1: Foi despachado para execução
+Processo 0: Executou no Core 0
+Processo 1: Executou no Core 1
+Processo 0: Processo terminou
+
+Andamento:
+                 | 0| 1| 2| 3| 4|
+
+    Processo  1: |  |  |* |  |* |
+
+    Processo  0: |  |  |  |* |* |
+
+    Processo  2: |  |  |  |  |  |
+
+    Processo  4: |  |  |  |  |  |
+
+    Processo  3: |  |  |  |  |  |
+
+    Processo  5: |  |  |  |  |  |
+
+Estado Atual:
+Quantum: 5
+
+Processador 0: Processo 2
+Processador 1: Idle
+Processador 2: Idle
+Processador 3: Idle
+Memória em uso:          512MB
+Memória disponível:    15872MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 4: Novo processo instanciado em memória
+Processo 4: Foi admitido pronto
+Processo 2: Foi despachado para execução
+Processo 2: Executou no Core 0
+Processo 1: Executou no Core 1
+Processo 1: Estava executando e perdeu processador. Foi pausado e está no estado pronto
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5|
+
+    Processo  1: |  |  |* |  |* |* |
+
+    Processo  0: |  |  |  |* |* |  |
+
+    Processo  2: |  |  |  |  |  |* |
+
+    Processo  4: |  |  |  |  |  |  |
+
+    Processo  3: |  |  |  |  |  |  |
+
+    Processo  5: |  |  |  |  |  |  |
+
+Estado Atual:
+Quantum: 6
+
+Processador 0: Idle
+Processador 1: Processo 4
+Processador 2: Processo 3
+Processador 3: Idle
+Memória em uso:         1024MB
+Memória disponível:    15360MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 3: Novo processo instanciado em memória
+Processo 3: Foi admitido pronto
+Processo 4: Foi despachado para execução
+Processo 3: Foi despachado para execução
+Processo 2: Executou no Core 0
+Processo 4: Executou no Core 1
+Processo 3: Executou no Core 2
+Processo 2: Estava executando e perdeu processador. Foi pausado e está no estado pronto
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5| 6|
+
+    Processo  1: |  |  |* |  |* |* |  |
+
+    Processo  0: |  |  |  |* |* |  |  |
+
+    Processo  2: |  |  |  |  |  |* |* |
+
+    Processo  4: |  |  |  |  |  |  |* |
+
+    Processo  3: |  |  |  |  |  |  |* |
+
+    Processo  5: |  |  |  |  |  |  |  |
+
+Estado Atual:
+Quantum: 7
+
+Processador 0: Idle
+Processador 1: Idle
+Processador 2: Processo 3
+Processador 3: Processo 5
+Memória em uso:          640MB
+Memória disponível:    15744MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 5: Novo processo instanciado em memória
+Processo 5: Foi admitido pronto
+Processo 1: Foi despachado para execução
+Processo 5: Foi despachado para execução
+Processo 1: Executou no Core 0
+Processo 4: Executou no Core 1
+Processo 3: Executou no Core 2
+Processo 5: Executou no Core 3
+Processo 4: Estava executando e perdeu processador. Foi pausado e está no estado pronto
+Processo 1: Processo terminou
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5| 6| 7|
+
+    Processo  1: |  |  |* |  |* |* |  |* |
+
+    Processo  0: |  |  |  |* |* |  |  |  |
+
+    Processo  2: |  |  |  |  |  |* |* |  |
+
+    Processo  4: |  |  |  |  |  |  |* |* |
+
+    Processo  3: |  |  |  |  |  |  |* |* |
+
+    Processo  5: |  |  |  |  |  |  |  |* |
+
+Estado Atual:
+Quantum: 8
+
+Processador 0: Idle
+Processador 1: Idle
+Processador 2: Processo 3
+Processador 3: Processo 5
+Memória em uso:        -1408MB
+Memória disponível:    17792MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 2: Foi despachado para execução
+Processo 2: Executou no Core 0
+Processo 3: Executou no Core 2
+Processo 5: Executou no Core 3
+Processo 2: Processo terminou
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5| 6| 7| 8|
+
+    Processo  1: |  |  |* |  |* |* |  |* |  |
+
+    Processo  0: |  |  |  |* |* |  |  |  |  |
+
+    Processo  2: |  |  |  |  |  |* |* |  |* |
+
+    Processo  4: |  |  |  |  |  |  |* |* |  |
+
+    Processo  3: |  |  |  |  |  |  |* |* |* |
+
+    Processo  5: |  |  |  |  |  |  |  |* |* |
+
+Estado Atual:
+Quantum: 9
+
+Processador 0: Idle
+Processador 1: Idle
+Processador 2: Processo 3
+Processador 3: Processo 5
+Memória em uso:        -1408MB
+Memória disponível:    17792MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 4: Foi despachado para execução
+Processo 4: Executou no Core 0
+Processo 3: Executou no Core 2
+Processo 5: Executou no Core 3
+Processo 4: Estava executando mas precisa ler/gravar. Foi bloqueado a espera de ocorrer evento
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|
+
+    Processo  1: |  |  |* |  |* |* |  |* |  |  |
+
+    Processo  0: |  |  |  |* |* |  |  |  |  |  |
+
+    Processo  2: |  |  |  |  |  |* |* |  |* |  |
+
+    Processo  4: |  |  |  |  |  |  |* |* |  |* |
+
+    Processo  3: |  |  |  |  |  |  |* |* |* |* |
+
+    Processo  5: |  |  |  |  |  |  |  |* |* |* |
+
+Estado Atual:
+Quantum: 10
+
+Disco 0 foi atribuido ao Processo 4
+Disco 1 foi atribuido ao Processo 4
+Processador 0: Idle
+Processador 1: Idle
+Processador 2: Processo 3
+Processador 3: Processo 5
+Memória em uso:        -1408MB
+Memória disponível:    17792MB
+Memória total:         16384MB
+Disco 0: Reservado para thread 4 no estado 4
+Disco 1: Reservado para thread 4 no estado 4
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 3: Executou no Core 2
+Processo 5: Executou no Core 3
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|
+
+    Processo  1: |  |  |* |  |* |* |  |* |  |  |  |
+
+    Processo  0: |  |  |  |* |* |  |  |  |  |  |  |
+
+    Processo  2: |  |  |  |  |  |* |* |  |* |  |  |
+
+    Processo  4: |  |  |  |  |  |  |* |* |  |* |  |
+
+    Processo  3: |  |  |  |  |  |  |* |* |* |* |* |
+
+    Processo  5: |  |  |  |  |  |  |  |* |* |* |* |
+
+Estado Atual:
+Quantum: 11
+
+Processador 0: Processo 4
+Processador 1: Idle
+Processador 2: Processo 3
+Processador 3: Processo 5
+Memória em uso:        -1408MB
+Memória disponível:    17792MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 4: Evento de leitura/escrita ocorreu e vai para pronto
+Processo 4: Foi despachado para execução
+Processo 4: Executou no Core 0
+Processo 3: Executou no Core 2
+Processo 5: Executou no Core 3
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
+
+    Processo  1: |  |  |* |  |* |* |  |* |  |  |  |  |
+
+    Processo  0: |  |  |  |* |* |  |  |  |  |  |  |  |
+
+    Processo  2: |  |  |  |  |  |* |* |  |* |  |  |  |
+
+    Processo  4: |  |  |  |  |  |  |* |* |  |* |  |* |
+
+    Processo  3: |  |  |  |  |  |  |* |* |* |* |* |* |
+
+    Processo  5: |  |  |  |  |  |  |  |* |* |* |* |* |
+
+Estado Atual:
+Quantum: 12
+
+Processador 0: Processo 4
+Processador 1: Idle
+Processador 2: Processo 3
+Processador 3: Processo 5
+Memória em uso:        -1408MB
+Memória disponível:    17792MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 4: Executou no Core 0
+Processo 3: Executou no Core 2
+Processo 5: Executou no Core 3
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|12|
+
+    Processo  1: |  |  |* |  |* |* |  |* |  |  |  |  |  |
+
+    Processo  0: |  |  |  |* |* |  |  |  |  |  |  |  |  |
+
+    Processo  2: |  |  |  |  |  |* |* |  |* |  |  |  |  |
+
+    Processo  4: |  |  |  |  |  |  |* |* |  |* |  |* |* |
+
+    Processo  3: |  |  |  |  |  |  |* |* |* |* |* |* |* |
+
+    Processo  5: |  |  |  |  |  |  |  |* |* |* |* |* |* |
+
+Estado Atual:
+Quantum: 13
+
+Processador 0: Idle
+Processador 1: Idle
+Processador 2: Idle
+Processador 3: Processo 5
+Memória em uso:        -3712MB
+Memória disponível:    20096MB
+Memória total:         16384MB
+Disco 0: idle
+Disco 1: idle
+Disco 2: idle
+Disco 3: idle
+
+Log de Processos:
+Processo 4: Executou no Core 0
+Processo 3: Executou no Core 2
+Processo 5: Executou no Core 3
+Processo 3: Processo terminou
+Processo 4: Processo terminou
+
+Andamento:
+                 | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|12|13|
+
+    Processo  1: |  |  |* |  |* |* |  |* |  |  |  |  |  |  |
+
+    Processo  0: |  |  |  |* |* |  |  |  |  |  |  |  |  |  |
+
+    Processo  2: |  |  |  |  |  |* |* |  |* |  |  |  |  |  |
+
+    Processo  4: |  |  |  |  |  |  |* |* |  |* |  |* |* |* |
+
+    Processo  3: |  |  |  |  |  |  |* |* |* |* |* |* |* |* |
+
+    Processo  5: |  |  |  |  |  |  |  |* |* |* |* |* |* |* |
+
